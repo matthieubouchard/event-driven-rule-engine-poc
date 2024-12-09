@@ -1,0 +1,20 @@
+{
+  "name": "clarity-rule-engine",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "yarn workspace remix dev --manual -c \"yarn workspace server start:dev\"",
+    "remix:build": "yarn workspace remix build",
+    "server:dev": "yarn workspace server start:dev"
+  },
+  "workspaces": [
+    "server",
+    "remix"
+  ],
+  "dependencies": {
+    "json-rule-engine": "^0.0.3"
+  }
+}
