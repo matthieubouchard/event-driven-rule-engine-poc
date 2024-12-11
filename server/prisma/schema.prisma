@@ -7,10 +7,131 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum FamilyStatus {
+  NEW
+  RETURNING
 }
+
+enum RuleActionType {
+  DOCUMENT_REQUEST
+}
+
+enum DocumentType {
+  PARENT_A_WAIVER
+  PARENT_B_WAIVER
+  W2_PARENT_A_PREVIOUS
+  W2_PARENT_B_PREVIOUS
+  W2_PARENT_A_CURRENT
+  W2_PARENT_B_CURRENT
+  TAX_1040
+  TAX_1120S
+  TAX_K1
+  TAX_1065
+  PAYSTUB
+  BUSINESS_TAX
+  BANK_STATEMENT
+  UNEMPLOYMENT_BENEFITS
+  TAX_1099
+  STATE_TAX_RETURN
+  PROOF_OF_DEBT
+}
+
+enum DocumentStatus {
+  PENDING
+  REQUESTED
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum RuleType {
+  APPLICATION
+  PAYMENT
+  NOTIFICATION
+}
+
+model School {
+  id           String        @id @default(uuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id               String            @id @default(uuid())
+  schoolId         String
+  school           School            @relation(fields: [schoolId], references: [id])
+  familyStatus     FamilyStatus
+  isBusinessOwner  Boolean           @default(false)
+  filedUsTaxes2021 Boolean           @default(false)
+  documents        Document[]
+  ruleAudits       RuleAudit[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  status           ApplicationStatus @default(DRAFT)
+}
+
+model Document {
+  id            String         @id @default(uuid())
+  applicationId String
+  application   Application    @relation(fields: [applicationId], references: [id])
+  type          DocumentType
+  status        DocumentStatus @default(PENDING)
+  requestedAt   DateTime       @default(now())
+  submittedAt   DateTime?
+  url           String?
+}
+
+model Rule {
+  id        String        @id @default(uuid())
+  active    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  versions  RuleVersion[]
+}
+
+model RuleVersion {
+  id          String      @id @default(uuid())
+  name        String      @unique()
+  description String?
+  type        RuleType    @default(APPLICATION)
+  ruleId      String
+  version     Int
+  ruleJson    Json // Stored as JSON array of condition objects
+  createdAt   DateTime    @default(now())
+  rule        Rule        @relation(fields: [ruleId], references: [id])
+  ruleAudits  RuleAudit[]
+
+  @@unique([ruleId, version])
+}
+
+model RuleAudit {
+  id            String      @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  ruleVersionId String
+  ruleVersion   RuleVersion @relation(fields: [ruleVersionId], references: [id])
+  evaluatedAt   DateTime    @default(now())
+  matched       Boolean
+}
+
+// // Types for service layer
+// interface RuleCondition {
+// type: RuleConditionType;
+// value: FamilyStatus | boolean;
+// }
+
+// interface RuleAction {
+// type: RuleActionType;
+// documentType: DocumentType;
+// description: string;
+// }

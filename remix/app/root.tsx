@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
@@ -8,6 +9,7 @@ import {
 import type {LinksFunction} from "@remix-run/node";
 
 import styles from "./tailwind.css";
+import Nav from "./components/Nav";
 
 export const links: LinksFunction = () => [
   {rel: "preconnect", href: "https://fonts.googleapis.com"},
@@ -33,31 +35,7 @@ export function Layout({children}: {children: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        <div className="navbar bg-base-100">
-          <div className="flex-1">
-            <a className="btn btn-ghost text-xl">Clarity Rule Engine</a>
-          </div>
-          <div className="flex-none">
-            <ul className="menu menu-horizontal px-1">
-              <li>
-                <a>Link</a>
-              </li>
-              <li>
-                <details>
-                  <summary>Parent</summary>
-                  <ul className="bg-base-100 rounded-t-none p-2">
-                    <li>
-                      <a>Link 1</a>
-                    </li>
-                    <li>
-                      <a>Link 2</a>
-                    </li>
-                  </ul>
-                </details>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <Nav />
         <div className="container mx-auto py-3">{children}</div>
         <ScrollRestoration />
         <Scripts />

@@ -8,8 +8,6 @@ import {
 } from '@nestjs/swagger'
 import { AppService } from './app.service'
 import { DbService } from './db/db.service'
-import { User, Prisma } from '@prisma/client'
-// import { UserDto } from './dto/user.dto'
 
 class LoginDto {
   @ApiProperty()
@@ -52,11 +50,6 @@ export class AppController {
     // type: User,
     isArray: true,
   })
-  @Get('users')
-  async getUsers(): Promise<Array<User>> {
-    const users = await this.dbService.client.user.findMany()
-    return users
-  }
   @Post('login')
   login(@Body() creds: LoginDto): { success: boolean } {
     console.log('creds!!!!!!!!!!', creds)

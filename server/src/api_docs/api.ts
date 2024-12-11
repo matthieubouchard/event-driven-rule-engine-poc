@@ -15,6 +15,10 @@ export interface LoginDto {
   remember?: boolean
 }
 
+export type CreateRuleDto = object
+
+export type UpdateRuleDto = object
+
 export type QueryParamsType = Record<string | number, any>
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
 
@@ -259,22 +263,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags app
-     * @name AppControllerGetUsers
-     * @summary Get users
-     * @request GET:/api/users
-     */
-    appControllerGetUsers: (params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/users`,
-        method: 'GET',
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags app
      * @name AppControllerLogin
+     * @summary Get users
      * @request POST:/api/login
      */
     appControllerLogin: (data: LoginDto, params: RequestParams = {}) =>
@@ -283,6 +273,96 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'POST',
         body: data,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerCreateRule
+     * @request POST:/api/rules
+     */
+    ruleControllerCreateRule: (data: CreateRuleDto, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerFindAll
+     * @request GET:/api/rules
+     */
+    ruleControllerFindAll: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerUpdateRule
+     * @request PUT:/api/rules/{id}
+     */
+    ruleControllerUpdateRule: (id: string, data: CreateRuleDto, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules/${id}`,
+        method: 'PUT',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerFindOne
+     * @request GET:/api/rules/{id}
+     */
+    ruleControllerFindOne: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules/${id}`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerUpdate
+     * @request PATCH:/api/rules/{id}
+     */
+    ruleControllerUpdate: (id: string, data: UpdateRuleDto, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules/${id}`,
+        method: 'PATCH',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerRemove
+     * @request DELETE:/api/rules/{id}
+     */
+    ruleControllerRemove: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/rules/${id}`,
+        method: 'DELETE',
         ...params,
       }),
   }

@@ -28,21 +28,6 @@
         ]
       }
     },
-    "/api/users": {
-      "get": {
-        "operationId": "AppController_getUsers",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Get users",
-        "tags": [
-          "app"
-        ]
-      }
-    },
     "/api/login": {
       "post": {
         "operationId": "AppController_login",
@@ -58,12 +43,155 @@
           }
         },
         "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get users",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/rules": {
+      "post": {
+        "operationId": "RuleController_createRule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
           "201": {
             "description": ""
           }
         },
         "tags": [
-          "app"
+          "Rule"
+        ]
+      },
+      "get": {
+        "operationId": "RuleController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      }
+    },
+    "/api/rules/{id}": {
+      "put": {
+        "operationId": "RuleController_updateRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      },
+      "get": {
+        "operationId": "RuleController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      },
+      "patch": {
+        "operationId": "RuleController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      },
+      "delete": {
+        "operationId": "RuleController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rule"
         ]
       }
     }
@@ -107,6 +235,14 @@
           "email",
           "password"
         ]
+      },
+      "CreateRuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateRuleDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }
