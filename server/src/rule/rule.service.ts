@@ -15,10 +15,10 @@ export class RuleService {
     }
     const rule = this.dbService.client.rule.create({
       data: {
-        name: createRuleDto.name,
-        description: createRuleDto?.description,
         versions: {
           create: {
+            name: createRuleDto.name,
+            description: createRuleDto?.description,
             version: 0,
             ruleJson: ruleJson as unknown as InputJsonValue,
             type: createRuleDto.type ?? RuleType.APPLICATION,
@@ -44,10 +44,10 @@ export class RuleService {
     const rule = this.dbService.client.rule.update({
       where: { id },
       data: {
-        name: updatedRule.name,
-        description: updatedRule?.description,
         versions: {
           create: {
+            name: updatedRule.name,
+            description: updatedRule?.description,
             version: latestVersion.version + 1,
             ruleJson: ruleJson as unknown as InputJsonValue,
             type: updatedRule.type ?? RuleType.APPLICATION,

@@ -23,13 +23,13 @@ async function seed() {
 
   const businessOwnerRule = await prisma.rule.create({
     data: {
-      name: 'Business Owner Documents',
-      description: 'Request additional documents from business owners',
       versions: {
         create: {
+          name: 'Business Owner Documents',
+          description: 'Request additional documents from business owners',
           version: 0,
           ruleJson: {
-            conditions: [{ type: 'BUSINESS_OWNER', value: true }],
+            conditions: [{ type: 'isBusinessOwner', value: true }],
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
@@ -45,13 +45,13 @@ async function seed() {
 
   const newFamilyRule = await prisma.rule.create({
     data: {
-      name: 'New Family Verification',
-      description: 'Request verification from new families',
       versions: {
         create: {
+          name: 'New Family Verification',
+          description: 'Request verification from new families',
           version: 0,
           ruleJson: {
-            conditions: [{ type: 'FAMILY_STATUS', value: 'NEW' }],
+            conditions: [{ type: 'familyStatus', value: 'NEW' }],
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
@@ -67,15 +67,15 @@ async function seed() {
 
   const complexRule = await prisma.rule.create({
     data: {
-      name: 'New Business Owner Verification',
-      description: 'Additional verification for new business owners',
       versions: {
         create: {
+          name: 'New Business Owner Verification',
+          description: 'Additional verification for new business owners',
           version: 0,
           ruleJson: {
             conditions: [
-              { type: 'FAMILY_STATUS', value: 'NEW' },
-              { type: 'BUSINESS_OWNER', value: true },
+              { type: 'familyStatus', value: 'NEW' },
+              { type: 'isBusinessOwner', value: true },
             ],
             actions: [
               {

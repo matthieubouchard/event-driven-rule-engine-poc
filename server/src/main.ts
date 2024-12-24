@@ -7,6 +7,8 @@ import { getRemixHandler, broadcastOnReady, PUBLIC_PATH } from './remix'
 import * as serveStatic from 'serve-static'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { exec } from 'child_process'
+import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import { kafkaOptions } from './pubsub/pubsub.module'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 // const API_DOCS_PATH = path.resolve(__dirname, '..', 'src', 'api_docs')
@@ -40,28 +42,35 @@ async function setupSwagger(app: NestExpressApplication) {
 
   if (process.env.NODE_ENV === 'development') {
     // Watch for changes to swagger.json and regenerate types if necessary
-    fs.watch(path.join(API_DOCS_PATH, 'swagger.json'), (eventType) => {
-      if (eventType === 'change') {
-        exec('yarn run generate:api', (error, stdout, stderr) => {
-          if (error) console.error('Error regenerating types:', error)
-          else console.info('Types regenerated')
-        })
-      }
-    })
+    // fs.watch(path.join(API_DOCS_PATH, 'swagger.json'), (eventType) => {
+    //   if (eventType === 'change') {
+    //     exec('yarn run generate:api', (error, stdout, stderr) => {
+    //       if (error) console.error('Error regenerating types:', error)
+    //       else console.info('Types regenerated')
+    //     })
+    //   }
+    // })
   }
 }
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
-  app.setGlobalPrefix('api')
   app.enableCors()
+  app.setGlobalPrefix('api')
+  await setupSwagger(app)
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: kafkaOptions,
+  })
+
+  await app.startAllMicroservices()
 
   const express = app.getHttpAdapter().getInstance()
   express.all('*', await getRemixHandler())
   express.use(serveStatic(PUBLIC_PATH, { index: false }))
 
-  await setupSwagger(app)
   await app.init()
 
   app.listen(PORT).then(() => {

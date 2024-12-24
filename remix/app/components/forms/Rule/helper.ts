@@ -2,8 +2,8 @@ import {z} from "zod";
 
 export const CONDITIONS = {
   FAMILY_STATUS: "familyStatus",
-  BUSINESS_OWNER: "businessOwner",
-  FILED_2021: "filed2021",
+  BUSINESS_OWNER: "isBusinessOwner",
+  FILED_2021: "filedUsTaxes2021",
 } as const;
 
 export enum FAMILY_STATUS {
