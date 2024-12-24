@@ -46,7 +46,7 @@ export class RuleEvaluationService {
         },
         conditions: {
           any: map(conditions, (c) => ({
-            fact: c.type,
+            fact: c.fact, // TODO: change this to fact
             operator: 'equal',
             value: c.value,
           })),
@@ -56,7 +56,7 @@ export class RuleEvaluationService {
 
     // Prepare facts from application
     const facts = {
-      familyStatus: 'RETURNING',
+      familyStatus: application.familyStatus,
       isBusinessOwner: application.isBusinessOwner,
       file2021: application.filedUsTaxes2021,
     }

@@ -56,17 +56,17 @@ export const formSchema = z.object({
   description: z.string(),
   conditions: z
     .array(
-      z.discriminatedUnion("type", [
+      z.discriminatedUnion("fact", [
         z.object({
-          type: z.literal(CONDITIONS.FAMILY_STATUS),
+          fact: z.literal(CONDITIONS.FAMILY_STATUS),
           value: z.nativeEnum(FAMILY_STATUS),
         }),
         z.object({
-          type: z.literal(CONDITIONS.BUSINESS_OWNER),
+          fact: z.literal(CONDITIONS.BUSINESS_OWNER),
           value: z.string().transform((val) => val === "true"),
         }),
         z.object({
-          type: z.literal(CONDITIONS.FILED_2021),
+          fact: z.literal(CONDITIONS.FILED_2021),
           value: z.string().transform((val) => val === "true"),
         }),
       ])

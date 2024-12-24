@@ -15,7 +15,7 @@ export interface RuleFormProps {
     name: string;
     description?: string;
     conditions: Array<{
-      type: string;
+      fact: string;
       value: string | boolean;
     }>;
     actions: Array<{
@@ -38,7 +38,7 @@ export default function RuleForm({
     defaultValue: initialData ?? {
       conditions: [
         {
-          type: CONDITIONS.FAMILY_STATUS,
+          fact: CONDITIONS.FAMILY_STATUS,
           value: FAMILY_STATUS.RETURNING,
         },
       ],
@@ -84,7 +84,7 @@ export default function RuleForm({
     form.insert({
       name: fields.conditions.name,
       defaultValue: {
-        type: CONDITIONS.FAMILY_STATUS,
+        fact: CONDITIONS.FAMILY_STATUS,
         value: FAMILY_STATUS.RETURNING,
       },
     });
@@ -107,24 +107,25 @@ export default function RuleForm({
   console.log("name field", nameField.errors);
 
   const renderConditionInput = (condition) => {
-    console.log("CONDITION", condition.value.type, condition.value);
+    console.log("CONDITION", condition.value.fact, condition.value);
 
     console.table({
       "condition.value": condition.value,
+      "condition.value.fact": condition.value.fact,
       "condition.value.type": condition.value.type,
       "condition.value.value": condition.value.value,
       "condition.name": condition.name,
     });
 
     // Ensure we have both type and value before rendering
-    if (!condition.value?.type) {
-      console.warn("Missing condition type:", condition);
+    if (!condition.value?.fact) {
+      console.warn("Missing condition fact:", condition);
       return null;
     }
 
     const value = String(condition.value.value); // Convert to string for select comparison
 
-    switch (condition.value.type) {
+    switch (condition.value.fact) {
       case CONDITIONS.FAMILY_STATUS:
         return (
           <select
@@ -159,7 +160,7 @@ export default function RuleForm({
           </select>
         );
       default:
-        console.warn("Unknown condition type:", condition.value.type);
+        console.warn("Unknown condition type:", condition.value.fact);
         return null;
     }
   };
@@ -257,8 +258,8 @@ export default function RuleForm({
                   {index === 0 ? <span>If</span> : <span>Or</span>}
                   <select
                     className="select select-bordered w-[240px]"
-                    name={`${condition.name}.type`}
-                    defaultValue={condition?.value?.type}
+                    name={`${condition.name}.fact`}
+                    defaultValue={condition?.value?.fact}
                   >
                     <option value={CONDITIONS.FAMILY_STATUS}>
                       Family Status
@@ -283,11 +284,6 @@ export default function RuleForm({
                     </button>
                   )}
                 </div>
-                {condition.error && (
-                  <div className="text-error text-sm mt-1">
-                    {condition.error}
-                  </div>
-                )}
               </div>
             ))}
 
@@ -375,11 +371,11 @@ export default function RuleForm({
                       </button>
                     )}
                   </div>
-                  {action.error && (
+                  {/* {action.error && (
                     <div className="text-error text-sm mt-1">
                       {action.error}
                     </div>
-                  )}
+                  )} */}
                 </div>
               );
             })}

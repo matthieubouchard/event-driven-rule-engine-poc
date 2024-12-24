@@ -29,7 +29,7 @@ async function seed() {
           description: 'Request additional documents from business owners',
           version: 0,
           ruleJson: {
-            conditions: [{ type: 'isBusinessOwner', value: true }],
+            conditions: [{ fact: 'isBusinessOwner', value: true }],
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
@@ -51,7 +51,7 @@ async function seed() {
           description: 'Request verification from new families',
           version: 0,
           ruleJson: {
-            conditions: [{ type: 'familyStatus', value: 'NEW' }],
+            conditions: [{ fact: 'familyStatus', value: 'NEW' }],
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
@@ -74,8 +74,8 @@ async function seed() {
           version: 0,
           ruleJson: {
             conditions: [
-              { type: 'familyStatus', value: 'NEW' },
-              { type: 'isBusinessOwner', value: true },
+              { fact: 'familyStatus', value: 'NEW' },
+              { fact: 'isBusinessOwner', value: true },
             ],
             actions: [
               {
