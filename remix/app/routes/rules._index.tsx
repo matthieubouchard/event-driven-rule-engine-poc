@@ -35,7 +35,7 @@ export default function Rules() {
             <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-200">
               <div className="card-body">
                 <h2 className="card-title text-lg font-semibold text-gray-800">
-                  {rule.name}
+                  {rule.versions[0].name}
                 </h2>
                 <div className="flex flex-col gap-2">
                   <div className="badge badge-outline">

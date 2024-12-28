@@ -6,7 +6,6 @@ import {formSchema} from "../components/forms/Rule/helper";
 import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
 
 export async function loader({params}: LoaderFunctionArgs) {
-  console.log("params", params);
   const res = await apiClient.ruleControllerFindOne(params.ruleId!);
   if (!res.ok) throw new Response("Rule not found", {status: 404});
   const rule = await res.json();
@@ -19,14 +18,14 @@ export default function EditRule() {
 
   // Show loading state during navigation
   if (navigation.state === "loading") {
-    console.count(" nav state loading");
     return <div>Loading...</div>;
   }
   const latestVersion = rule.versions[0];
   const initialData: RuleFormProps["initialData"] = {
-    ...latestVersion.ruleJson,
-    name: rule.name,
-    description: rule.description,
+    name: latestVersion.name,
+    description: latestVersion.description,
+    conditions: latestVersion.ruleJson.conditions,
+    actions: latestVersion.ruleJson.actions,
   };
 
   console.log("Initial data being passed to form", initialData);
@@ -45,14 +44,9 @@ export async function action({request, params}: ActionFunctionArgs) {
   if (submission.status !== "success") {
     return json(submission.reply());
   }
-  console.log("payload??", submission.payload);
   const res = await apiClient.ruleControllerUpdateRule(
     params.ruleId as string,
     submission.payload
   );
-  console.log("RESPONSE FROM UPDATE!!!", res);
   return redirect("/rules");
-
-  // console.log("Validated data:", submission.value);
-  // return json({status: "success", submission: submission.value});
 }

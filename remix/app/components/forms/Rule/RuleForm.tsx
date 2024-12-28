@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {useForm} from "@conform-to/react";
 import {parseWithZod} from "@conform-to/zod";
-import {Form, FormMethod, useNavigation} from "@remix-run/react";
+import {Form, FormMethod} from "@remix-run/react";
 import {
   CONDITIONS,
   DOCUMENT_TYPES,
@@ -31,10 +31,7 @@ export default function RuleForm({
   initialData,
   method = "post",
 }: RuleFormProps) {
-  console.log("initial DATa???", initialData);
-  const navigation = useNavigation();
   const [form, fields] = useForm({
-    // id: initialData?.name ?? "new-rule",
     defaultValue: initialData ?? {
       conditions: [
         {
