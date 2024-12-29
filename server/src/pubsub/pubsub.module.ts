@@ -17,14 +17,24 @@ export const kafkaOptions = {
   },
 }
 
-export const pubSubConfig: ClientProviderOptions = {
-  name: 'PUBSUB_CLIENT',
+export const createPubSubConfig = (
+  groupName: string,
+): ClientProviderOptions => ({
+  name: `PUBSUB_CLIENT`,
   transport: Transport.KAFKA,
-  options: kafkaOptions,
-}
+  options: {
+    client: {
+      clientId: `${groupName}-client`,
+      brokers: ['localhost:9092'],
+    },
+    consumer: {
+      groupId: `${groupName}-consumer`,
+    },
+  },
+})
 
 @Module({
-  imports: [ClientsModule.register([pubSubConfig])],
+  imports: [ClientsModule.register([createPubSubConfig('pubsub')])],
   providers: [PubSubService],
   controllers: [PubsubController],
   exports: [PubSubService],

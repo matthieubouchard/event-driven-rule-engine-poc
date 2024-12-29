@@ -1,28 +1,26 @@
 import {useEffect} from "react";
 import {useForm} from "@conform-to/react";
 import {parseWithZod} from "@conform-to/zod";
-import {Form, FormMethod} from "@remix-run/react";
+import {Form, FormMethod, useLoaderData, useNavigate} from "@remix-run/react";
 import {
-  CONDITIONS,
-  DOCUMENT_TYPES,
-  FAMILY_STATUS,
-  formSchema,
-  DOCUMENT_LABELS,
-} from "./helper";
+  FamilyStatusCondition,
+  FamilyStatusFact,
+  BusinessOwnerCondition,
+  Filed2021Condition,
+  Action,
+} from "../../../../../server/src/api_docs/api";
+// import {CONDITION}
+
+import {CONDITIONS, FAMILY_STATUS, formSchema} from "./helper";
 
 export interface RuleFormProps {
   initialData?: {
     name: string;
     description?: string;
-    conditions: Array<{
-      fact: string;
-      value: string | boolean;
-    }>;
-    actions: Array<{
-      type: string;
-      documentType: string;
-      description: string;
-    }>;
+    conditions: Array<
+      FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition
+    >;
+    actions: Array<Action>;
   };
   method: FormMethod;
 }
@@ -31,18 +29,22 @@ export default function RuleForm({
   initialData,
   method = "post",
 }: RuleFormProps) {
+  const {documents} = useLoaderData<typeof loader>();
+  console.log("GOT DOCUMENTS", documents);
+  const navigate = useNavigate();
+
   const [form, fields] = useForm({
     defaultValue: initialData ?? {
       conditions: [
         {
-          fact: CONDITIONS.FAMILY_STATUS,
-          value: FAMILY_STATUS.RETURNING,
+          fact: FamilyStatusFact.FamilyStatus,
+          value: "NEW",
         },
       ],
       actions: [
         {
           type: "DOCUMENT_REQUEST",
-          documentType: DOCUMENT_TYPES.BUSINESS_TAX,
+          value: documents[0].id,
           description: "",
         },
       ],
@@ -92,7 +94,7 @@ export default function RuleForm({
       name: fields.actions.name,
       defaultValue: {
         type: "DOCUMENT_REQUEST",
-        documentType: DOCUMENT_TYPES.BUSINESS_TAX,
+        value: documents[0].id,
         description: "",
       },
     });
@@ -105,14 +107,6 @@ export default function RuleForm({
 
   const renderConditionInput = (condition) => {
     console.log("CONDITION", condition.value.fact, condition.value);
-
-    console.table({
-      "condition.value": condition.value,
-      "condition.value.fact": condition.value.fact,
-      "condition.value.type": condition.value.type,
-      "condition.value.value": condition.value.value,
-      "condition.name": condition.name,
-    });
 
     // Ensure we have both type and value before rendering
     if (!condition.value?.fact) {
@@ -182,7 +176,11 @@ export default function RuleForm({
             Advanced
           </button>
           <div className="flex gap-3">
-            <button type="button" className="btn">
+            <button
+              type="button"
+              className="btn"
+              onClick={() => navigate("/rules")}
+            >
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
@@ -336,25 +334,29 @@ export default function RuleForm({
 
             {actions.map((action, index) => {
               console.log("action.value", action.value);
+              console.log("action", action.name);
               return (
                 <div key={action.key}>
                   <div className="flex gap-3 mt-4">
                     <select
                       className="select select-bordered w-[240px]"
-                      name={`${action.name}.documentType`}
-                      defaultValue={action.value?.documentType}
+                      name={`${action.name}.value`}
+                      defaultValue={action.value?.value}
                     >
-                      {Object.entries(DOCUMENT_TYPES).map(([key, value]) => (
-                        <option key={value} value={value}>
-                          {DOCUMENT_LABELS[value]}
-                        </option>
-                      ))}
+                      {documents.map(
+                        ({id, name}: {id: string; name: string}) => (
+                          <option key={id} value={id}>
+                            {name}
+                          </option>
+                        )
+                      )}
                     </select>
                     <input
                       type="text"
                       placeholder="Description of Document"
                       className="input input-bordered flex-1"
                       name={`${action.name}.description`}
+                      defaultValue={action.value?.description}
                     />
                     {actions.length > 1 && (
                       <button

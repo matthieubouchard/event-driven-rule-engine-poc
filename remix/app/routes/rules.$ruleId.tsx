@@ -5,15 +5,33 @@ import {parseWithZod} from "@conform-to/zod";
 import {formSchema} from "../components/forms/Rule/helper";
 import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
 
+// export async function loader({params}: LoaderFunctionArgs) {
+//   const res = await apiClient.ruleControllerFindOne(params.ruleId!);
+//   if (!res.ok) throw new Response("Rule not found", {status: 404});
+//   const rule = await res.json();
+//   return json(rule);
+// }
+// EditRule.tsx
 export async function loader({params}: LoaderFunctionArgs) {
-  const res = await apiClient.ruleControllerFindOne(params.ruleId!);
-  if (!res.ok) throw new Response("Rule not found", {status: 404});
-  const rule = await res.json();
-  return json(rule);
+  const [ruleRes, documentsRes] = await Promise.all([
+    apiClient.ruleControllerFindOne(params.ruleId!),
+    apiClient.documentControllerFindAll(),
+  ]);
+
+  if (!ruleRes.ok) throw new Response("Rule not found", {status: 404});
+  if (!documentsRes.ok)
+    throw new Response("Documents not found", {status: 404});
+
+  const [rule, documents] = await Promise.all([
+    ruleRes.json(),
+    documentsRes.json(),
+  ]);
+
+  return json({rule, documents});
 }
 
 export default function EditRule() {
-  const rule = useLoaderData<typeof loader>();
+  const {rule, documents} = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   // Show loading state during navigation

@@ -43,21 +43,29 @@ CREATE TABLE "Application" (
 -- CreateTable
 CREATE TABLE "Document" (
     "id" TEXT NOT NULL,
-    "applicationId" TEXT NOT NULL,
-    "type" "DocumentType" NOT NULL,
-    "status" "DocumentStatus" NOT NULL DEFAULT 'PENDING',
-    "requestedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "submittedAt" TIMESTAMP(3),
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "url" TEXT,
 
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "DocumentRequest" (
+    "id" TEXT NOT NULL,
+    "applicationId" TEXT NOT NULL,
+    "documentId" TEXT NOT NULL,
+    "status" "DocumentStatus" NOT NULL DEFAULT 'PENDING',
+    "requestedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "submittedAt" TIMESTAMP(3),
+
+    CONSTRAINT "DocumentRequest_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Rule" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" TEXT,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -68,6 +76,8 @@ CREATE TABLE "Rule" (
 -- CreateTable
 CREATE TABLE "RuleVersion" (
     "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
     "type" "RuleType" NOT NULL DEFAULT 'APPLICATION',
     "ruleId" TEXT NOT NULL,
     "version" INTEGER NOT NULL,
@@ -89,7 +99,7 @@ CREATE TABLE "RuleAudit" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Rule_name_key" ON "Rule"("name");
+CREATE UNIQUE INDEX "Document_name_key" ON "Document"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RuleVersion_ruleId_version_key" ON "RuleVersion"("ruleId", "version");
@@ -98,7 +108,10 @@ CREATE UNIQUE INDEX "RuleVersion_ruleId_version_key" ON "RuleVersion"("ruleId", 
 ALTER TABLE "Application" ADD CONSTRAINT "Application_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "School"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DocumentRequest" ADD CONSTRAINT "DocumentRequest_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DocumentRequest" ADD CONSTRAINT "DocumentRequest_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RuleVersion" ADD CONSTRAINT "RuleVersion_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

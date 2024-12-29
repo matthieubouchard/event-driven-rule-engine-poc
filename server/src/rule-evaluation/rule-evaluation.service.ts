@@ -7,7 +7,7 @@ import { RuleType } from '@prisma/client'
 @Injectable()
 export class RuleEvaluationService {
   constructor(private readonly dbService: DbService) {}
-  async evaluateApplicationRule(applicationId: string) {
+  async evaluateApplicationRules(applicationId: string) {
     const [application, rules] = await Promise.all([
       this.dbService.client.application.findUnique({
         where: { id: applicationId },
@@ -25,28 +25,25 @@ export class RuleEvaluationService {
         },
       }),
     ])
-    console.log('application', application)
-    console.log('rules', rules)
 
     const engine = new Engine()
 
     // Add rules to engine
     for (const rule of rules) {
       const ruleVersion = get(rule, 'versions[0]')
-      console.log('rule veresion', ruleVersion.ruleJson)
       const conditions = get(ruleVersion, 'ruleJson.conditions', [])
-      // const actions = get(ruleVersion, 'ruleJson.actions', [])
       engine.addRule({
         name: ruleVersion.name,
         event: {
           type: 'RULE_EVALUATION',
           params: {
+            applicationId,
             ruleVersionId: ruleVersion.id,
           },
         },
         conditions: {
           any: map(conditions, (c) => ({
-            fact: c.fact, // TODO: change this to fact
+            fact: c.fact,
             operator: 'equal',
             value: c.value,
           })),
@@ -54,7 +51,7 @@ export class RuleEvaluationService {
       })
     }
 
-    // Prepare facts from application
+    // Facts from application - can expand on this with other rules/entities
     const facts = {
       familyStatus: application.familyStatus,
       isBusinessOwner: application.isBusinessOwner,

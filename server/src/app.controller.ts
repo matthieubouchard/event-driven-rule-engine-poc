@@ -81,9 +81,9 @@ export class AppController {
     return { success: true }
   }
 
-  @MessagePattern('application.submitted')
-  async handleApplication(@Payload() message: any) {
-    console.log('APP CONTROLLER received!!!:', message)
-    // Do rules specific things
-  }
+  // @MessagePattern('application.submitted')
+  // async handleApplication(@Payload() message: any) {
+  //   console.log('APP CONTROLLER received!!!:', message)
+  //   // Do rules specific things
+  // }
 }

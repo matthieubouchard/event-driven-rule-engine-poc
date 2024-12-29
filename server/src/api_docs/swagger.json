@@ -81,9 +81,20 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Rules found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rule"
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "Get all rules",
         "tags": [
           "Rule"
         ]
@@ -194,6 +205,20 @@
           "Rule"
         ]
       }
+    },
+    "/api/document": {
+      "get": {
+        "operationId": "DocumentController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Document"
+        ]
+      }
     }
   },
   "info": {
@@ -236,13 +261,301 @@
           "password"
         ]
       },
+      "FamilyStatusFact": {
+        "type": "string",
+        "enum": [
+          "familyStatus"
+        ]
+      },
+      "FamilyStatusCondition": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyStatusFact"
+              }
+            ]
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "RETURNING"
+            ]
+          }
+        },
+        "required": [
+          "fact",
+          "value"
+        ]
+      },
+      "BusinessOwnerFact": {
+        "type": "string",
+        "enum": [
+          "isBusinessOwner"
+        ]
+      },
+      "BusinessOwnerCondition": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessOwnerFact"
+              }
+            ]
+          },
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fact",
+          "value"
+        ]
+      },
+      "Filed2021Fact": {
+        "type": "string",
+        "enum": [
+          "filedUsTaxes2021"
+        ]
+      },
+      "Filed2021Condition": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Filed2021Fact"
+              }
+            ]
+          },
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fact",
+          "value"
+        ]
+      },
+      "Action": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "DOCUMENT_REQUEST"
+            ],
+            "default": "DOCUMENT_REQUEST"
+          },
+          "value": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ]
+      },
       "CreateRuleDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "APPLICATION",
+              "PAYMENT",
+              "NOTIFICATION"
+            ],
+            "default": "APPLICATION"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/FamilyStatusCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/BusinessOwnerCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/Filed2021Condition"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "fact",
+                "mapping": {
+                  "familyStatus": "#/components/schemas/FamilyStatusCondition",
+                  "isBusinessOwner": "#/components/schemas/BusinessOwnerCondition",
+                  "filedUsTaxes2021": "#/components/schemas/Filed2021Condition"
+                }
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "type",
+          "conditions",
+          "actions"
+        ]
+      },
+      "RuleVersion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "APPLICATION",
+              "PAYMENT",
+              "NOTIFICATION"
+            ]
+          },
+          "ruleJson": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "discriminator": {
+                    "propertyName": "fact"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FamilyStatusCondition"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BusinessOwnerCondition"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Filed2021Condition"
+                    }
+                  ]
+                }
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Action"
+                }
+              }
+            },
+            "required": [
+              "conditions",
+              "actions"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "name",
+          "description",
+          "type"
+        ]
+      },
+      "Rule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleVersion"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "versions"
+        ]
       },
       "UpdateRuleDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "APPLICATION",
+              "PAYMENT",
+              "NOTIFICATION"
+            ],
+            "default": "APPLICATION"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/FamilyStatusCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/BusinessOwnerCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/Filed2021Condition"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "fact",
+                "mapping": {
+                  "familyStatus": "#/components/schemas/FamilyStatusCondition",
+                  "isBusinessOwner": "#/components/schemas/BusinessOwnerCondition",
+                  "filedUsTaxes2021": "#/components/schemas/Filed2021Condition"
+                }
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            }
+          }
+        }
       }
     }
   }

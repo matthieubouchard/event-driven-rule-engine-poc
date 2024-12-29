@@ -15,9 +15,95 @@ export interface LoginDto {
   remember?: boolean
 }
 
-export type CreateRuleDto = object
+export enum FamilyStatusFact {
+  FamilyStatus = 'familyStatus',
+}
 
-export type UpdateRuleDto = object
+export interface FamilyStatusCondition {
+  fact: FamilyStatusFact
+  value: 'NEW' | 'RETURNING'
+}
+
+export enum BusinessOwnerFact {
+  IsBusinessOwner = 'isBusinessOwner',
+}
+
+export interface BusinessOwnerCondition {
+  fact: BusinessOwnerFact
+  value: boolean
+}
+
+export enum Filed2021Fact {
+  FiledUsTaxes2021 = 'filedUsTaxes2021',
+}
+
+export interface Filed2021Condition {
+  fact: Filed2021Fact
+  value: boolean
+}
+
+export interface Action {
+  /** @default "DOCUMENT_REQUEST" */
+  type: 'DOCUMENT_REQUEST'
+  value: string
+  description?: string
+}
+
+export interface CreateRuleDto {
+  name: string
+  description: string
+  /** @default "APPLICATION" */
+  type: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
+  conditions: (
+    | ({
+        fact: 'familyStatus'
+      } & FamilyStatusCondition)
+    | ({
+        fact: 'isBusinessOwner'
+      } & BusinessOwnerCondition)
+    | ({
+        fact: 'filedUsTaxes2021'
+      } & Filed2021Condition)
+  )[]
+  actions: Action[]
+}
+
+export interface RuleVersion {
+  id: string
+  version: number
+  name: string
+  description: string
+  type: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
+  ruleJson?: {
+    conditions: (FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition)[]
+    actions: Action[]
+  }
+}
+
+export interface Rule {
+  id: string
+  active?: boolean
+  versions: RuleVersion[]
+}
+
+export interface UpdateRuleDto {
+  name?: string
+  description?: string
+  /** @default "APPLICATION" */
+  type?: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
+  conditions?: (
+    | ({
+        fact: 'familyStatus'
+      } & FamilyStatusCondition)
+    | ({
+        fact: 'isBusinessOwner'
+      } & BusinessOwnerCondition)
+    | ({
+        fact: 'filedUsTaxes2021'
+      } & Filed2021Condition)
+  )[]
+  actions?: Action[]
+}
 
 export type QueryParamsType = Record<string | number, any>
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
@@ -297,12 +383,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Rule
      * @name RuleControllerFindAll
+     * @summary Get all rules
      * @request GET:/api/rules
      */
     ruleControllerFindAll: (params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<Rule[], any>({
         path: `/api/rules`,
         method: 'GET',
+        format: 'json',
         ...params,
       }),
 
@@ -363,6 +451,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<void, any>({
         path: `/api/rules/${id}`,
         method: 'DELETE',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document
+     * @name DocumentControllerFindAll
+     * @request GET:/api/document
+     */
+    documentControllerFindAll: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/document`,
+        method: 'GET',
         ...params,
       }),
   }

@@ -1,4 +1,3 @@
-// prisma/seed.ts
 import { PrismaClient, FamilyStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -12,6 +11,38 @@ async function seed() {
     prisma.rule.deleteMany(),
     prisma.school.deleteMany(),
   ])
+
+  const DOCUMENTS: Record<string, string> = {
+    TAX_1040: '1040',
+    W2_PARENT_A_PREV: 'W2 Parent A (Previous Year)',
+    W2_PARENT_B_PREV: 'W2 Parent B (Previous Year)',
+    W2_PARENT_A_CURR: 'W2 Parent A (Current Year)',
+    W2_PARENT_B_CURR: 'W2 Parent B (Current Year)',
+    PAYSTUB: 'Paystub',
+    BUSINESS_TAX: 'Business Tax Documents',
+    BANK_STATEMENT: 'Bank Statement',
+    TAX_1120S: '1120S',
+    K1: 'K1',
+    TAX_1065: '1065',
+    PARENT_A_WAIVER: 'Parent A Waiver Form',
+    PARENT_B_WAIVER: 'Parent B Waiver Form',
+    UNEMPLOYMENT: 'Unemployment Benefits Statement',
+    TAX_1099: '1099',
+    STATE_TAX: 'State Tax Return',
+    PROOF_OF_DEBT: 'Proof of Debt',
+  }
+
+  for (const [, name] of Object.entries(DOCUMENTS)) {
+    await prisma.document.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    })
+  }
+
+  const documents = await prisma.document.findMany({
+    select: { id: true, name: true },
+  })
 
   const bronxSchool = await prisma.school.create({
     data: { name: 'Bronx Academy' },
@@ -33,7 +64,8 @@ async function seed() {
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
-                documentType: 'BUSINESS_TAX',
+                value: documents.find((d) => d.name === DOCUMENTS.BUSINESS_TAX)
+                  ?.id,
                 description: 'Business tax documents required',
               },
             ],
@@ -55,7 +87,9 @@ async function seed() {
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
-                documentType: 'PARENT_A_WAIVER',
+                value: documents.find(
+                  (d) => d.name === DOCUMENTS.PARENT_A_WAIVER,
+                )?.id,
                 description: 'New family verification form',
               },
             ],
@@ -80,12 +114,13 @@ async function seed() {
             actions: [
               {
                 type: 'DOCUMENT_REQUEST',
-                documentType: 'BUSINESS_TAX',
+                value: documents.find((d) => d.name === DOCUMENTS.BUSINESS_TAX)
+                  ?.id,
                 description: 'Business documentation required',
               },
               {
                 type: 'DOCUMENT_REQUEST',
-                documentType: 'TAX_K1',
+                value: documents.find((d) => d.name === DOCUMENTS.K1)?.id,
                 description: 'K1 form required for business verification',
               },
             ],
@@ -104,16 +139,6 @@ async function seed() {
         isBusinessOwner: false,
         filedUsTaxes2021: true,
         status: 'SUBMITTED',
-        documents: {
-          create: [
-            {
-              type: 'TAX_1040',
-              status: 'SUBMITTED',
-              submittedAt: new Date(),
-              url: 'https://example.com/new-family-1040.pdf',
-            },
-          ],
-        },
       },
     }),
 
@@ -125,16 +150,6 @@ async function seed() {
         isBusinessOwner: true,
         filedUsTaxes2021: true,
         status: 'SUBMITTED',
-        documents: {
-          create: [
-            {
-              type: 'TAX_1040',
-              status: 'SUBMITTED',
-              submittedAt: new Date(),
-              url: 'https://example.com/new-business-1040.pdf',
-            },
-          ],
-        },
       },
     }),
 
@@ -146,14 +161,6 @@ async function seed() {
         isBusinessOwner: false,
         filedUsTaxes2021: false,
         status: 'SUBMITTED',
-        documents: {
-          create: [
-            {
-              type: 'PARENT_A_WAIVER',
-              status: 'PENDING',
-            },
-          ],
-        },
       },
     }),
 
@@ -165,18 +172,6 @@ async function seed() {
         isBusinessOwner: true,
         filedUsTaxes2021: false,
         status: 'SUBMITTED',
-        documents: {
-          create: [
-            {
-              type: 'PARENT_A_WAIVER',
-              status: 'PENDING',
-            },
-            {
-              type: 'BANK_STATEMENT',
-              status: 'PENDING',
-            },
-          ],
-        },
       },
     }),
 
@@ -186,14 +181,6 @@ async function seed() {
         familyStatus: FamilyStatus.RETURNING,
         isBusinessOwner: true,
         filedUsTaxes2021: true,
-        documents: {
-          create: {
-            type: 'TAX_1040',
-            status: 'SUBMITTED',
-            submittedAt: new Date(),
-            url: 'https://example.com/1040.pdf',
-          },
-        },
       },
     }),
 
@@ -203,14 +190,6 @@ async function seed() {
         familyStatus: FamilyStatus.NEW,
         isBusinessOwner: false,
         filedUsTaxes2021: false,
-        documents: {
-          create: {
-            type: 'TAX_1040',
-            status: 'SUBMITTED',
-            submittedAt: new Date(),
-            url: 'https://example.com/1040.pdf',
-          },
-        },
       },
     }),
   ])

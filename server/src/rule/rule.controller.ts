@@ -9,10 +9,27 @@ import {
   Put,
 } from '@nestjs/common'
 import { RuleService } from './rule.service'
-import { CreateRuleDto } from './dto/create-rule.dto'
+import {
+  FamilyStatusCondition,
+  BusinessOwnerCondition,
+  Filed2021Condition,
+  Action,
+  CreateRuleDto,
+} from './dto/create-rule.dto'
 import { UpdateRuleDto } from './dto/update-rule.dto'
 import { DbService } from 'src/db/db.service'
+import { ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { Rule, RuleVersion } from './dto/rule.dto'
 
+@ApiExtraModels(
+  FamilyStatusCondition,
+  BusinessOwnerCondition,
+  Filed2021Condition,
+  Action,
+  CreateRuleDto,
+  RuleVersion,
+  Rule,
+)
 @Controller('rules')
 export class RuleController {
   constructor(
@@ -31,6 +48,13 @@ export class RuleController {
     return this.ruleService.updateRule(id, updatedRule)
   }
 
+  @ApiOperation({ summary: 'Get all rules' })
+  @ApiResponse({
+    status: 200,
+    description: 'Rules found',
+    type: Rule,
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.ruleService.findAll()

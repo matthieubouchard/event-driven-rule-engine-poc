@@ -5,8 +5,15 @@ import RuleForm from "../components/forms/Rule/RuleForm";
 import {formSchema} from "../components/forms/Rule/helper";
 import {redirect} from "@remix-run/react";
 
+export async function loader() {
+  const res = await apiClient.documentControllerFindAll();
+  if (!res.ok) throw new Response("Documents not found", {status: 404});
+  const documents = await res.json();
+  return json({documents});
+}
+
 export default function CreateRule() {
-  return <RuleForm />;
+  return <RuleForm method="post" />;
 }
 
 export async function action({request}: ActionFunctionArgs) {
@@ -23,7 +30,4 @@ export async function action({request}: ActionFunctionArgs) {
   const res = await apiClient.ruleControllerCreateRule(submission.payload);
   console.log("RESPONSE FROM SAVE!!!", res);
   return redirect("/rules");
-
-  // console.log("Validated data:", submission.value);
-  // return json({status: "success", submission: submission.value});
 }

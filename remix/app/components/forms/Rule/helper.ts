@@ -76,7 +76,7 @@ export const formSchema = z.object({
     .array(
       z.object({
         type: z.string().default("DOCUMENT_REQUEST"),
-        documentType: z.string(),
+        value: z.string(),
         description: z.string().optional(),
       })
     )
