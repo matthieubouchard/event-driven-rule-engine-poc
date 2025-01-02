@@ -483,5 +483,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'GET',
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Notification
+     * @name NotificationControllerConnect
+     * @request GET:/api/notification/sse
+     */
+    notificationControllerConnect: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/notification/sse`,
+        method: 'GET',
+        ...params,
+      }),
   }
 }

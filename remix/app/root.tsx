@@ -10,6 +10,8 @@ import type {LinksFunction} from "@remix-run/node";
 
 import styles from "./tailwind.css";
 import Nav from "./components/Nav";
+import {useServerNotifications} from "./hooks/useServerNotifications";
+import {NotificationToast} from "./components/NotificationToast";
 
 export const links: LinksFunction = () => [
   {rel: "preconnect", href: "https://fonts.googleapis.com"},
@@ -45,5 +47,22 @@ export function Layout({children}: {children: React.ReactNode}) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const {notifications, status} = useServerNotifications();
+  console.table({notifications, status});
+  return (
+    <>
+      <div className="fixed top-4 right-10 z-50 flex flex-col gap-2 w-1/4">
+        {notifications.map((notification) => (
+          <div key={notification.id}>
+            <NotificationToast
+              type={notification.type}
+              message={`${notification.type}: ${notification.payload}`}
+              isVisible={notification.isVisible}
+            />
+          </div>
+        ))}
+      </div>
+      <Outlet />;
+    </>
+  );
 }

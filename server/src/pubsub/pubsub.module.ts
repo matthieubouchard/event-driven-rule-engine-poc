@@ -33,10 +33,13 @@ export const createPubSubConfig = (
   },
 })
 
+export const PubSubClient = ClientsModule.register([
+  createPubSubConfig('pubsub'),
+])
 @Module({
-  imports: [ClientsModule.register([createPubSubConfig('pubsub')])],
+  imports: [PubSubClient],
   providers: [PubSubService],
   controllers: [PubsubController],
-  exports: [PubSubService],
+  exports: [PubSubService, PubSubClient],
 })
 export class PubSubModule {}

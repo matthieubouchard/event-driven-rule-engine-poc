@@ -220,6 +220,20 @@
           "Document"
         ]
       }
+    },
+    "/api/notification/sse": {
+      "get": {
+        "operationId": "NotificationController_connect",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notification"
+        ]
+      }
     }
   },
   "info": {
