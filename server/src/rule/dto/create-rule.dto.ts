@@ -1,7 +1,4 @@
-// create-rule.dto.ts
-
 import { Type } from 'class-transformer'
-import { ApiProperty } from '@nestjs/swagger'
 import {
   IsString,
   MinLength,
@@ -12,34 +9,68 @@ import {
   ArrayMinSize,
   IsBoolean,
 } from 'class-validator'
-import { FamilyStatus, RuleActionType, RuleType } from '@prisma/client'
+import { RuleActionType, RuleType } from '@prisma/client'
+import { ApiProperty } from '@nestjs/swagger'
+// import { RuleConditionFact, FamilyStatus } from '../../../../shared'
 
-export enum CONDITIONS {
+// export enum RuleConditionFact {
+//   FAMILY_STATUS = 'familyStatus',
+//   IS_BUSINESS_OWNER = 'isBusinessOwner',
+//   FILED_2021 = 'filedUsTaxes2021',
+// }
+export enum RuleConditionFact {
   FAMILY_STATUS = 'familyStatus',
   IS_BUSINESS_OWNER = 'isBusinessOwner',
   FILED_2021 = 'filedUsTaxes2021',
 }
 
+export enum FamilyStatusEnum {
+  NEW = 'NEW',
+  RETURNING = 'RETURNING',
+}
+
+export class RuleCondition {
+  @ApiProperty({
+    enum: RuleConditionFact,
+    description: 'The type of condition',
+    enumName: 'RuleConditionFact',
+  })
+  @IsEnum(RuleConditionFact)
+  value: RuleConditionFact
+}
+// export class FamilyStatus {
+//   @ApiProperty({
+//     enum: FamilyStatusEnum,
+//     description: 'New or Returning',
+//     enumName: 'FamilyStatusEnum', // Changed to match the actual enum name
+//   })
+//   @IsEnum(FamilyStatusEnum)
+//   value: FamilyStatusEnum
+// }
+
 export class FamilyStatusCondition {
   @ApiProperty({
-    enum: [CONDITIONS.FAMILY_STATUS],
+    enum: [RuleConditionFact.FAMILY_STATUS],
     enumName: 'FamilyStatusFact',
   })
-  @IsEnum(CONDITIONS)
-  fact: CONDITIONS.FAMILY_STATUS
+  @IsEnum(RuleConditionFact)
+  fact: RuleConditionFact.FAMILY_STATUS
 
-  @ApiProperty({ enum: FamilyStatus })
-  @IsEnum(FamilyStatus)
-  value: FamilyStatus
+  @ApiProperty({
+    enum: FamilyStatusEnum,
+    enumName: 'FamilyStatusEnum',
+  })
+  @IsEnum(FamilyStatusEnum)
+  value: FamilyStatusEnum
 }
 
 export class BusinessOwnerCondition {
   @ApiProperty({
-    enum: [CONDITIONS.IS_BUSINESS_OWNER],
+    enum: [RuleConditionFact.IS_BUSINESS_OWNER],
     enumName: 'BusinessOwnerFact',
   })
-  @IsEnum(CONDITIONS)
-  fact: CONDITIONS.IS_BUSINESS_OWNER
+  @IsEnum(RuleConditionFact)
+  fact: RuleConditionFact.IS_BUSINESS_OWNER
 
   @ApiProperty()
   @IsBoolean()
@@ -47,9 +78,12 @@ export class BusinessOwnerCondition {
 }
 
 export class Filed2021Condition {
-  @ApiProperty({ enum: [CONDITIONS.FILED_2021], enumName: 'Filed2021Fact' })
-  @IsEnum(CONDITIONS)
-  fact: CONDITIONS.FILED_2021
+  @ApiProperty({
+    enum: [RuleConditionFact.FILED_2021],
+    enumName: 'Filed2021Fact',
+  })
+  @IsEnum(RuleConditionFact)
+  fact: RuleConditionFact.FILED_2021
 
   @ApiProperty()
   @IsBoolean()
@@ -102,11 +136,12 @@ export class CreateRuleDto {
       discriminator: {
         propertyName: 'fact',
         mapping: {
-          [CONDITIONS.FAMILY_STATUS]:
+          [RuleConditionFact.FAMILY_STATUS]:
             '#/components/schemas/FamilyStatusCondition',
-          [CONDITIONS.IS_BUSINESS_OWNER]:
+          [RuleConditionFact.IS_BUSINESS_OWNER]:
             '#/components/schemas/BusinessOwnerCondition',
-          [CONDITIONS.FILED_2021]: '#/components/schemas/Filed2021Condition',
+          [RuleConditionFact.FILED_2021]:
+            '#/components/schemas/Filed2021Condition',
         },
       },
     },
@@ -118,9 +153,12 @@ export class CreateRuleDto {
     discriminator: {
       property: 'fact',
       subTypes: [
-        { value: FamilyStatusCondition, name: CONDITIONS.FAMILY_STATUS },
-        { value: BusinessOwnerCondition, name: CONDITIONS.IS_BUSINESS_OWNER },
-        { value: Filed2021Condition, name: CONDITIONS.FILED_2021 },
+        { value: FamilyStatusCondition, name: RuleConditionFact.FAMILY_STATUS },
+        {
+          value: BusinessOwnerCondition,
+          name: RuleConditionFact.IS_BUSINESS_OWNER,
+        },
+        { value: Filed2021Condition, name: RuleConditionFact.FILED_2021 },
       ],
     },
   })

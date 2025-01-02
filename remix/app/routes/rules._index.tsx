@@ -1,20 +1,19 @@
 import {Link, useLoaderData} from "@remix-run/react";
 import {apiClient} from "../apiClient";
 import {json} from "@remix-run/node";
+import {Rule} from "@server/src/api_docs/api";
 
-export async function loader() {
-  const res = await apiClient.ruleControllerFindAll();
+export async function loader(): Promise<Rule[]> {
+  const rules = await apiClient.ruleControllerFindAll();
 
-  if (!res) {
+  if (!rules) {
     throw new Response("Failed to load rules", {status: 404});
   }
-  const feRules = await res.json();
-
-  return json(feRules);
+  return await rules.json();
 }
 
 export default function Rules() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
   console.log("data", data);
 
   return (
@@ -29,7 +28,7 @@ export default function Rules() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {data.map((rule) => (
           <Link to={`/rules/${rule.id}`} key={rule.id} className="no-underline">
             <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-200">

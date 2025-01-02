@@ -19,9 +19,14 @@ export enum FamilyStatusFact {
   FamilyStatus = 'familyStatus',
 }
 
+export enum FamilyStatusEnum {
+  NEW = 'NEW',
+  RETURNING = 'RETURNING',
+}
+
 export interface FamilyStatusCondition {
   fact: FamilyStatusFact
-  value: 'NEW' | 'RETURNING'
+  value: FamilyStatusEnum
 }
 
 export enum BusinessOwnerFact {
@@ -84,6 +89,17 @@ export interface Rule {
   id: string
   active?: boolean
   versions: RuleVersion[]
+}
+
+export enum RuleConditionFact {
+  FamilyStatus = 'familyStatus',
+  IsBusinessOwner = 'isBusinessOwner',
+  FiledUsTaxes2021 = 'filedUsTaxes2021',
+}
+
+export interface RuleCondition {
+  /** The type of condition */
+  value: RuleConditionFact
 }
 
 export interface UpdateRuleDto {
@@ -379,7 +395,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description test
      *
      * @tags Rule
      * @name RuleControllerFindAll

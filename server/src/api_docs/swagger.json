@@ -77,6 +77,7 @@
         ]
       },
       "get": {
+        "description": "test",
         "operationId": "RuleController_findAll",
         "parameters": [],
         "responses": {
@@ -267,6 +268,13 @@
           "familyStatus"
         ]
       },
+      "FamilyStatusEnum": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "RETURNING"
+        ]
+      },
       "FamilyStatusCondition": {
         "type": "object",
         "properties": {
@@ -278,10 +286,10 @@
             ]
           },
           "value": {
-            "type": "string",
-            "enum": [
-              "NEW",
-              "RETURNING"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyStatusEnum"
+              }
             ]
           }
         },
@@ -505,6 +513,30 @@
         "required": [
           "id",
           "versions"
+        ]
+      },
+      "RuleConditionFact": {
+        "type": "string",
+        "enum": [
+          "familyStatus",
+          "isBusinessOwner",
+          "filedUsTaxes2021"
+        ]
+      },
+      "RuleCondition": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "description": "The type of condition",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RuleConditionFact"
+              }
+            ]
+          }
+        },
+        "required": [
+          "value"
         ]
       },
       "UpdateRuleDto": {

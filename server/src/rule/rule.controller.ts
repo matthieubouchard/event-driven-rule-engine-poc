@@ -15,9 +15,10 @@ import {
   Filed2021Condition,
   Action,
   CreateRuleDto,
+  RuleCondition,
 } from './dto/create-rule.dto'
 import { UpdateRuleDto } from './dto/update-rule.dto'
-import { DbService } from 'src/db/db.service'
+import { DbService } from '../db/db.service'
 import { ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { Rule, RuleVersion } from './dto/rule.dto'
 
@@ -29,6 +30,7 @@ import { Rule, RuleVersion } from './dto/rule.dto'
   CreateRuleDto,
   RuleVersion,
   Rule,
+  RuleCondition,
 )
 @Controller('rules')
 export class RuleController {
@@ -48,7 +50,7 @@ export class RuleController {
     return this.ruleService.updateRule(id, updatedRule)
   }
 
-  @ApiOperation({ summary: 'Get all rules' })
+  @ApiOperation({ summary: 'Get all rules', description: 'test' })
   @ApiResponse({
     status: 200,
     description: 'Rules found',

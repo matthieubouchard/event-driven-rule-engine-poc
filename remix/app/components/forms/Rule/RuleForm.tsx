@@ -4,14 +4,13 @@ import {parseWithZod} from "@conform-to/zod";
 import {Form, FormMethod, useLoaderData, useNavigate} from "@remix-run/react";
 import {
   FamilyStatusCondition,
-  FamilyStatusFact,
   BusinessOwnerCondition,
   Filed2021Condition,
   Action,
-} from "../../../../../server/src/api_docs/api";
-// import {CONDITION}
-
-import {CONDITIONS, FAMILY_STATUS, formSchema} from "./helper";
+  RuleConditionFact,
+  FamilyStatusEnum,
+} from "@server/src/api_docs/api";
+import {formSchema} from "./helper";
 
 export interface RuleFormProps {
   initialData?: {
@@ -24,6 +23,7 @@ export interface RuleFormProps {
   };
   method: FormMethod;
 }
+// console.log("RULECONDITN", RuleCondition)
 
 export default function RuleForm({
   initialData,
@@ -37,8 +37,8 @@ export default function RuleForm({
     defaultValue: initialData ?? {
       conditions: [
         {
-          fact: FamilyStatusFact.FamilyStatus,
-          value: "NEW",
+          fact: RuleConditionFact.FamilyStatus,
+          value: FamilyStatusEnum.NEW,
         },
       ],
       actions: [
@@ -65,26 +65,12 @@ export default function RuleForm({
     }
   }, [initialData, form]);
 
-  // Reset form when navigating between routes
-  // useEffect(() => {
-  //   if (navigation.location?.pathname === "/rules/new") {
-  //     form.reset();
-  //     setIsInitialized(false);
-  //   }
-  // }, [navigation.location, form]);
-
-  // useEffect(() => {
-  //   if (initialData) {
-  //     form.reset();
-  //   }
-  // }, [initialData, form]);
-
   const handleAddCondition = () => {
     form.insert({
       name: fields.conditions.name,
       defaultValue: {
-        fact: CONDITIONS.FAMILY_STATUS,
-        value: FAMILY_STATUS.RETURNING,
+        fact: RuleConditionFact.FamilyStatus,
+        value: FamilyStatusEnum.NEW,
       },
     });
   };
@@ -117,18 +103,18 @@ export default function RuleForm({
     const value = String(condition.value.value); // Convert to string for select comparison
 
     switch (condition.value.fact) {
-      case CONDITIONS.FAMILY_STATUS:
+      case RuleConditionFact.FamilyStatus:
         return (
           <select
             className="select select-bordered w-[240px]"
             name={`${condition.name}.value`}
             defaultValue={value}
           >
-            <option value={FAMILY_STATUS.NEW}>New</option>
-            <option value={FAMILY_STATUS.RETURNING}>Returning</option>
+            <option value={FamilyStatusEnum.NEW}>New</option>
+            <option value={FamilyStatusEnum.RETURNING}>Returning</option>
           </select>
         );
-      case CONDITIONS.BUSINESS_OWNER:
+      case RuleConditionFact.IsBusinessOwner:
         return (
           <select
             className="select select-bordered w-[240px]"
@@ -139,7 +125,7 @@ export default function RuleForm({
             <option value="false">No</option>
           </select>
         );
-      case CONDITIONS.FILED_2021:
+      case RuleConditionFact.FiledUsTaxes2021:
         return (
           <select
             className="select select-bordered w-[240px]"
@@ -256,13 +242,13 @@ export default function RuleForm({
                     name={`${condition.name}.fact`}
                     defaultValue={condition?.value?.fact}
                   >
-                    <option value={CONDITIONS.FAMILY_STATUS}>
+                    <option value={RuleConditionFact.FamilyStatus}>
                       Family Status
                     </option>
-                    <option value={CONDITIONS.BUSINESS_OWNER}>
+                    <option value={RuleConditionFact.IsBusinessOwner}>
                       Business Owner
                     </option>
-                    <option value={CONDITIONS.FILED_2021}>
+                    <option value={RuleConditionFact.FiledUsTaxes2021}>
                       Filed 2021 Taxes
                     </option>
                   </select>
