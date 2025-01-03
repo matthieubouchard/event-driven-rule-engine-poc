@@ -9,6 +9,7 @@ import { RuleEvaluationModule } from './rule-evaluation/rule-evaluation.module'
 import { ClientsModule } from '@nestjs/microservices'
 import { DocumentModule } from './document/document.module'
 import { NotificationModule } from './notification/notification.module'
+import { ApplicationModule } from './application/application.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationModule } from './notification/notification.module'
     RuleEvaluationModule,
     DocumentModule,
     NotificationModule,
+    ApplicationModule,
     // ClientsModule.register([createPubSubConfig('app')]),
   ],
   controllers: [AppController],

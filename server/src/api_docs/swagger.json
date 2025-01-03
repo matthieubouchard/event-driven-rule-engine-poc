@@ -234,6 +234,74 @@
           "Notification"
         ]
       }
+    },
+    "/api/application": {
+      "get": {
+        "operationId": "ApplicationController_findAll",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Application"
+        ]
+      }
+    },
+    "/api/application/{id}": {
+      "post": {
+        "operationId": "ApplicationController_processApplication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericMutationResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Application"
+        ]
+      }
+    },
+    "/api/application/sse": {
+      "get": {
+        "operationId": "ApplicationController_connect",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Application"
+        ]
+      }
     }
   },
   "info": {
@@ -602,6 +670,118 @@
             }
           }
         }
+      },
+      "StudentDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dob": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "dob"
+        ]
+      },
+      "RuleVersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "name"
+        ]
+      },
+      "RuleAuditDto": {
+        "type": "object",
+        "properties": {
+          "ruleVersion": {
+            "$ref": "#/components/schemas/RuleVersionDto"
+          },
+          "matched": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "evaluatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ruleVersion",
+          "matched",
+          "id",
+          "evaluatedAt"
+        ]
+      },
+      "ApplicationResponseDto": {
+        "type": "object",
+        "properties": {
+          "familyStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "RETURNING"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "isBusinessOwner": {
+            "type": "boolean"
+          },
+          "filedUsTaxes2021": {
+            "type": "boolean"
+          },
+          "student": {
+            "$ref": "#/components/schemas/StudentDto"
+          },
+          "ruleAudits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleAuditDto"
+            }
+          }
+        },
+        "required": [
+          "familyStatus",
+          "id",
+          "isBusinessOwner",
+          "filedUsTaxes2021",
+          "student",
+          "ruleAudits"
+        ]
+      },
+      "GenericMutationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message",
+          "success"
+        ]
       }
     }
   }

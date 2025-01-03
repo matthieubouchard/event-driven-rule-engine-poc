@@ -121,6 +121,40 @@ export interface UpdateRuleDto {
   actions?: Action[]
 }
 
+export interface StudentDto {
+  firstName: string
+  lastName: string
+  /** @format date-time */
+  dob: string
+}
+
+export interface RuleVersionDto {
+  version: number
+  name: string
+}
+
+export interface RuleAuditDto {
+  ruleVersion: RuleVersionDto
+  matched: boolean
+  id: string
+  /** @format date-time */
+  evaluatedAt: string
+}
+
+export interface ApplicationResponseDto {
+  familyStatus: 'NEW' | 'RETURNING'
+  id: string
+  isBusinessOwner: boolean
+  filedUsTaxes2021: boolean
+  student: StudentDto
+  ruleAudits: RuleAuditDto[]
+}
+
+export interface GenericMutationResponse {
+  message: string
+  success: boolean
+}
+
 export type QueryParamsType = Record<string | number, any>
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
 
@@ -494,6 +528,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     notificationControllerConnect: (params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/api/notification/sse`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Application
+     * @name ApplicationControllerFindAll
+     * @request GET:/api/application
+     */
+    applicationControllerFindAll: (params: RequestParams = {}) =>
+      this.request<any, ApplicationResponseDto[]>({
+        path: `/api/application`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Application
+     * @name ApplicationControllerProcessApplication
+     * @request POST:/api/application/{id}
+     */
+    applicationControllerProcessApplication: (id: string, params: RequestParams = {}) =>
+      this.request<any, GenericMutationResponse>({
+        path: `/api/application/${id}`,
+        method: 'POST',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Application
+     * @name ApplicationControllerConnect
+     * @request GET:/api/application/sse
+     */
+    applicationControllerConnect: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/application/sse`,
         method: 'GET',
         ...params,
       }),

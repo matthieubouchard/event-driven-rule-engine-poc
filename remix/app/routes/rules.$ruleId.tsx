@@ -5,13 +5,6 @@ import {parseWithZod} from "@conform-to/zod";
 import {formSchema} from "../components/forms/Rule/helper";
 import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
 
-// export async function loader({params}: LoaderFunctionArgs) {
-//   const res = await apiClient.ruleControllerFindOne(params.ruleId!);
-//   if (!res.ok) throw new Response("Rule not found", {status: 404});
-//   const rule = await res.json();
-//   return json(rule);
-// }
-// EditRule.tsx
 export async function loader({params}: LoaderFunctionArgs) {
   const [ruleRes, documentsRes] = await Promise.all([
     apiClient.ruleControllerFindOne(params.ruleId!),

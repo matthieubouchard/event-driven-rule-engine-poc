@@ -14,20 +14,8 @@ export class NotificationController {
     res.setHeader('Connection', 'keep-alive')
 
     const subscription = this.eventEmitter.subscribe((notification) => {
+      console.log('RECEVED NOTIFICatoin in subscritpon', notification)
       res.write(`data: ${JSON.stringify(notification)}\n\n`)
-    })
-
-    const notifications = [
-      'DOCUMENT_REQUESTED',
-      'APPLICATION_SUBMITTED',
-      'RULE_EVALUATED',
-    ]
-    notifications.forEach((type) => {
-      this.eventEmitter.next({
-        type,
-        payload: 'HELLO WORLD',
-        timestamp: new Date().toISOString(),
-      })
     })
 
     req.on('close', () => {

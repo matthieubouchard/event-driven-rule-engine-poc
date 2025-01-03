@@ -31,6 +31,7 @@ export class RuleEvaluationService {
     // Add rules to engine
     for (const rule of rules) {
       const ruleVersion = get(rule, 'versions[0]')
+      console.log('RULE VERSION', ruleVersion)
       const conditions = get(ruleVersion, 'ruleJson.conditions', [])
       engine.addRule({
         name: ruleVersion.name,
@@ -55,7 +56,7 @@ export class RuleEvaluationService {
     const facts = {
       familyStatus: application.familyStatus,
       isBusinessOwner: application.isBusinessOwner,
-      file2021: application.filedUsTaxes2021,
+      filedUsTaxes2021: application.filedUsTaxes2021,
     }
 
     try {

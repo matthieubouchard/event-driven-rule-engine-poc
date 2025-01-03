@@ -78,6 +78,9 @@ model Application {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   status            ApplicationStatus @default(DRAFT)
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
 }
 
 model Document {
@@ -98,6 +101,40 @@ model DocumentRequest {
   status        DocumentStatus @default(PENDING)
   requestedAt   DateTime       @default(now())
   submittedAt   DateTime?
+}
+
+model Family {
+  id        String    @id @default(uuid())
+  parentA   Parent    @relation("ParentA", fields: [parentAId], references: [id])
+  parentAId String    @unique
+  parentB   Parent?   @relation("ParentB", fields: [parentBId], references: [id])
+  parentBId String?   @unique
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Parent {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  familyA   Family?  @relation("ParentA")
+  familyB   Family?  @relation("ParentB")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id           String        @id @default(uuid())
+  firstName    String
+  lastName     String
+  dob          DateTime
+  familyId     String
+  family       Family        @relation(fields: [familyId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
 }
 
 model Rule {
