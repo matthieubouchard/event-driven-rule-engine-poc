@@ -71,15 +71,13 @@ export class RuleService {
       where: { id },
       include: { versions: { orderBy: { version: 'desc' }, take: 1 } },
     })
-    console.log('Rule>>>>>>>', rule)
     return rule
   }
 
-  update(id: number, updatedRule: UpdateRuleDto) {
-    return `This action updates a #${id} rule`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} rule`
+  async softDelete(id: string) {
+    await this.dbService.client.rule.update({
+      where: { id },
+      data: { active: false },
+    })
   }
 }

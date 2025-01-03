@@ -33,6 +33,7 @@ export class RuleEvaluationService {
       const ruleVersion = get(rule, 'versions[0]')
       console.log('RULE VERSION', ruleVersion)
       const conditions = get(ruleVersion, 'ruleJson.conditions', [])
+      const actions = get(ruleVersion, 'ruleJson.actions', [])
       engine.addRule({
         name: ruleVersion.name,
         event: {
@@ -40,6 +41,7 @@ export class RuleEvaluationService {
           params: {
             applicationId,
             ruleVersionId: ruleVersion.id,
+            actions,
           },
         },
         conditions: {

@@ -1,6 +1,5 @@
 import {Link, useLoaderData} from "@remix-run/react";
 import {apiClient} from "../apiClient";
-import {json} from "@remix-run/node";
 import {Rule} from "@server/src/api_docs/api";
 
 export async function loader(): Promise<Rule[]> {

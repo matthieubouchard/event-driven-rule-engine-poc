@@ -15,7 +15,7 @@ export function useServerNotifications(
   const [status, setStatus] = useState<
     "connecting" | "connected" | "disconnected"
   >("connecting");
-  const NOTIFICATION_DURATION = 4000;
+  const NOTIFICATION_DURATION = 5000;
 
   useEffect(() => {
     const eventSource = new EventSource(endpoint);

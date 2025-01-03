@@ -16,8 +16,19 @@ export class ApplicationService {
         isBusinessOwner: true,
         filedUsTaxes2021: true,
         student: { select: { firstName: true, lastName: true, dob: true } },
+        school: { select: { name: true } },
+        documentRequests: {
+          select: {
+            id: true,
+            status: true,
+            document: { select: { name: true } },
+            requestedAt: true,
+            updatedAt: true,
+          },
+        },
         ruleAudits: {
           orderBy: { evaluatedAt: 'desc' },
+          take: 20,
           select: {
             id: true,
             ruleVersion: { select: { version: true, name: true } },

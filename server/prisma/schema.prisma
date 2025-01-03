@@ -16,26 +16,6 @@ enum RuleActionType {
   DOCUMENT_REQUEST
 }
 
-enum DocumentType {
-  PARENT_A_WAIVER
-  PARENT_B_WAIVER
-  W2_PARENT_A_PREVIOUS
-  W2_PARENT_B_PREVIOUS
-  W2_PARENT_A_CURRENT
-  W2_PARENT_B_CURRENT
-  TAX_1040
-  TAX_1120S
-  TAX_K1
-  TAX_1065
-  PAYSTUB
-  BUSINESS_TAX
-  BANK_STATEMENT
-  UNEMPLOYMENT_BENEFITS
-  TAX_1099
-  STATE_TAX_RETURN
-  PROOF_OF_DEBT
-}
-
 enum DocumentStatus {
   PENDING
   REQUESTED
@@ -67,17 +47,17 @@ model School {
 }
 
 model Application {
-  id                String            @id @default(uuid())
-  schoolId          String
-  school            School            @relation(fields: [schoolId], references: [id])
-  familyStatus      FamilyStatus
-  isBusinessOwner   Boolean           @default(false)
-  filedUsTaxes2021  Boolean           @default(false)
-  documentsRequests DocumentRequest[]
-  ruleAudits        RuleAudit[]
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  status            ApplicationStatus @default(DRAFT)
+  id               String            @id @default(uuid())
+  schoolId         String
+  school           School            @relation(fields: [schoolId], references: [id])
+  familyStatus     FamilyStatus
+  isBusinessOwner  Boolean           @default(false)
+  filedUsTaxes2021 Boolean           @default(false)
+  documentRequests DocumentRequest[]
+  ruleAudits       RuleAudit[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  status           ApplicationStatus @default(DRAFT)
 
   student   Student @relation(fields: [studentId], references: [id])
   studentId String
@@ -101,6 +81,9 @@ model DocumentRequest {
   status        DocumentStatus @default(PENDING)
   requestedAt   DateTime       @default(now())
   submittedAt   DateTime?
+  updatedAt     DateTime?      @updatedAt
+
+  @@unique([applicationId, documentId])
 }
 
 model Family {

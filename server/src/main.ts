@@ -7,8 +7,8 @@ import { getRemixHandler, broadcastOnReady, PUBLIC_PATH } from './remix'
 import * as serveStatic from 'serve-static'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { kafkaOptions } from './pubsub/pubsub.module'
 import { exec } from 'child_process'
+import { mainClientConfig } from './pubsub/config'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 const API_DOCS_PATH = path.resolve(process.cwd(), 'src', 'api_docs')
@@ -55,13 +55,12 @@ async function bootstrap() {
 
   app.enableCors()
   app.setGlobalPrefix('api')
+
+  // setup swagger docs
   await setupSwagger(app)
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.KAFKA,
-    options: kafkaOptions,
-  })
-
+  // connect microservices
+  app.connectMicroservice<MicroserviceOptions>(mainClientConfig)
   await app.startAllMicroservices()
 
   const express = app.getHttpAdapter().getInstance()

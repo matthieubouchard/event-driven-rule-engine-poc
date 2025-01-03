@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { ClientKafka } from '@nestjs/microservices'
+import { KAFKA_CLIENT } from './config'
 
 interface PubSubMessage<T = any> {
   topic: string
@@ -9,7 +10,10 @@ interface PubSubMessage<T = any> {
 
 @Injectable()
 export class PubSubService {
-  constructor(@Inject('PUBSUB_CLIENT') private readonly client: ClientKafka) {}
+  constructor(
+    @Inject(KAFKA_CLIENT)
+    private readonly client: ClientKafka,
+  ) {}
 
   async onModuleInit() {
     await this.client.connect()

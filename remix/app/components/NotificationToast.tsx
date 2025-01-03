@@ -29,7 +29,8 @@ export const NotificationToast: FC<NotificationProps> = ({
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <span>{message}</span>
+      <br />
+      <div>{message}</div>
     </div>
   );
 };

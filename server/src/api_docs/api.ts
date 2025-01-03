@@ -9,12 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface LoginDto {
-  email: string
-  password: string
-  remember?: boolean
-}
-
 export enum FamilyStatusFact {
   FamilyStatus = 'familyStatus',
 }
@@ -102,30 +96,15 @@ export interface RuleCondition {
   value: RuleConditionFact
 }
 
-export interface UpdateRuleDto {
-  name?: string
-  description?: string
-  /** @default "APPLICATION" */
-  type?: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
-  conditions?: (
-    | ({
-        fact: 'familyStatus'
-      } & FamilyStatusCondition)
-    | ({
-        fact: 'isBusinessOwner'
-      } & BusinessOwnerCondition)
-    | ({
-        fact: 'filedUsTaxes2021'
-      } & Filed2021Condition)
-  )[]
-  actions?: Action[]
-}
-
 export interface StudentDto {
   firstName: string
   lastName: string
   /** @format date-time */
   dob: string
+}
+
+export interface SchoolDto {
+  name: string
 }
 
 export interface RuleVersionDto {
@@ -141,13 +120,29 @@ export interface RuleAuditDto {
   evaluatedAt: string
 }
 
+export interface DocumentDto {
+  name: string
+}
+
+export interface DocumentRequestDto {
+  id: string
+  /** @format date-time */
+  requestedAt: string
+  /** @format date-time */
+  updatedAt: string
+  status: 'PENDING' | 'REQUESTED' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
+  document: DocumentDto
+}
+
 export interface ApplicationResponseDto {
   familyStatus: 'NEW' | 'RETURNING'
   id: string
   isBusinessOwner: boolean
   filedUsTaxes2021: boolean
   student: StudentDto
+  school: SchoolDto
   ruleAudits: RuleAuditDto[]
+  documentRequests: DocumentRequestDto[]
 }
 
 export interface GenericMutationResponse {
@@ -377,44 +372,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags app
-     * @name AppControllerGetHello
-     * @summary Get hello message
-     * @request GET:/api/hello
-     */
-    appControllerGetHello: (params: RequestParams = {}) =>
-      this.request<
-        {
-          message?: string
-        },
-        any
-      >({
-        path: `/api/hello`,
-        method: 'GET',
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags app
-     * @name AppControllerLogin
-     * @summary Get users
-     * @request POST:/api/login
-     */
-    appControllerLogin: (data: LoginDto, params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/login`,
-        method: 'POST',
-        body: data,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
      * @tags Rule
      * @name RuleControllerCreateRule
      * @request POST:/api/rules
@@ -478,26 +435,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Rule
-     * @name RuleControllerUpdate
-     * @request PATCH:/api/rules/{id}
-     */
-    ruleControllerUpdate: (id: string, data: UpdateRuleDto, params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/rules/${id}`,
-        method: 'PATCH',
-        body: data,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Rule
-     * @name RuleControllerRemove
+     * @name RuleControllerSoftDelete
      * @request DELETE:/api/rules/{id}
      */
-    ruleControllerRemove: (id: string, params: RequestParams = {}) =>
+    ruleControllerSoftDelete: (id: string, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/api/rules/${id}`,
         method: 'DELETE',
@@ -557,20 +498,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<any, GenericMutationResponse>({
         path: `/api/application/${id}`,
         method: 'POST',
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Application
-     * @name ApplicationControllerConnect
-     * @request GET:/api/application/sse
-     */
-    applicationControllerConnect: (params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/application/sse`,
-        method: 'GET',
         ...params,
       }),
   }

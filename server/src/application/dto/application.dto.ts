@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { FamilyStatus } from '@prisma/client'
+import { DocumentStatus, FamilyStatus } from '@prisma/client'
 
 export class StudentDto {
   @ApiProperty()
@@ -10,6 +10,10 @@ export class StudentDto {
 
   @ApiProperty()
   dob: Date
+}
+export class SchoolDto {
+  @ApiProperty()
+  name: string
 }
 
 export class RuleVersionDto {
@@ -33,7 +37,27 @@ export class RuleAuditDto {
   @ApiProperty()
   evaluatedAt: Date
 }
+export class DocumentDto {
+  @ApiProperty()
+  name: string
+}
 
+export class DocumentRequestDto {
+  @ApiProperty()
+  id: string
+
+  @ApiProperty()
+  requestedAt: Date
+
+  @ApiProperty()
+  updatedAt?: Date
+
+  @ApiProperty({ enum: DocumentStatus })
+  status: DocumentStatus
+
+  @ApiProperty({ type: DocumentDto })
+  document: DocumentDto
+}
 export class ApplicationResponseDto {
   @ApiProperty({ enum: FamilyStatus })
   familyStatus: FamilyStatus
@@ -50,8 +74,14 @@ export class ApplicationResponseDto {
   @ApiProperty()
   student: StudentDto
 
+  @ApiProperty()
+  school: SchoolDto
+
   @ApiProperty({ type: [RuleAuditDto] })
   ruleAudits: RuleAuditDto[]
+
+  @ApiProperty({ type: [DocumentRequestDto] })
+  documentRequests: DocumentRequestDto[]
 }
 
 export class GenericMutationResponse {

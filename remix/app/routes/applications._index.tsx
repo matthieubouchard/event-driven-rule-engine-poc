@@ -1,87 +1,45 @@
-import React, {useState} from "react";
-import {Link, useLoaderData, Form} from "@remix-run/react";
+import {useLoaderData, Form, redirect} from "@remix-run/react";
 import {ActionFunctionArgs, json} from "@remix-run/node";
-import {ChevronDown, ChevronRight} from "lucide-react";
 import {apiClient} from "../apiClient";
 import {ApplicationResponseDto} from "@server/src/api_docs/api";
+import RuleAuditLogTable from "../components/RuleAuditLogTable";
+import DocumentRequestsTable from "~/components/DocumentRequestTable";
 
 export async function loader(): Promise<ApplicationResponseDto[]> {
-  const res = await apiClient.applicationControllerFindAll();
-  // todo: handle error
-  const applications = await res.json();
-  return applications;
+  const rules = await apiClient.applicationControllerFindAll();
+  if (!rules) {
+    throw new Response("Failed to load rules", {status: 404});
+  }
+  return await rules.json();
 }
 
 export async function action({request}: ActionFunctionArgs) {
   const formData = await request.formData();
   const applicationId = formData.get("applicationId");
-  const res =
-    await apiClient.applicationControllerProcessApplication(applicationId);
+  const res = await apiClient.applicationControllerProcessApplication(
+    applicationId!
+  );
   if (!res.ok)
     throw new Response("Failed to process application", {
       status: 500,
     });
-  console.log("res");
 
-  // This would be where you trigger your Kafka event or API call
   console.log(`Processing application ${applicationId}`);
-
+  // stubbing this to re-load page data
+  setTimeout(() => {
+    redirect("/applications");
+  }, 3000);
   return json({success: true});
 }
 
-function AuditLog({
-  auditLog,
-}: {
-  auditLog: ApplicationResponseDto["ruleAudits"];
-}) {
-  const [open, setOpen] = useState(false);
-  const toggle = () => setOpen(!open);
+const renderBirthday = (dateString: string) => {
+  const date = new Date(dateString);
 
-  return (
-    <div className="mt-4">
-      <button
-        onClick={toggle}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 mb-2"
-      >
-        Audit Log
-        {open ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-      </button>
-
-      {open && (
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            <thead>
-              <tr>
-                <th>Rule Name</th>
-                <th>Version</th>
-                <th>Evaluated At</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {auditLog.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{entry.ruleVersion.name}</td>
-                  <td className="text-center">{entry.ruleVersion.version}</td>
-                  <td>{new Date(entry.evaluatedAt).toLocaleString()}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        entry.matched ? "badge-success" : "badge-error"
-                      }`}
-                    >
-                      {entry.matched ? "Matched" : "Not Matched"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
+  const formattedDate = `${
+    date.getMonth() + 1
+  }/${date.getDate()}/${date.getFullYear()}`;
+  return formattedDate;
+};
 export default function Applications() {
   const applications = useLoaderData<typeof loader>();
 
@@ -98,9 +56,13 @@ export default function Applications() {
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="card-title text-lg font-semibold text-gray-800">
-                    {application.student.firstName}{" "}
-                    {application.student.lastName}
+                    {application.school.name}
                   </h2>
+                  <h3 className="text-md font-semibold text-gray-600">
+                    {application.student.firstName}{" "}
+                    {application.student.lastName} DOB:{" "}
+                    {renderBirthday(application.student.dob)}
+                  </h3>
                   <div className="flex gap-2 mt-2">
                     {application.isBusinessOwner && (
                       <span className="badge badge-outline">
@@ -114,7 +76,8 @@ export default function Applications() {
                 </div>
               </div>
 
-              <AuditLog auditLog={application.ruleAudits} />
+              <DocumentRequestsTable requests={application.documentRequests} />
+              <RuleAuditLogTable auditLog={application.ruleAudits} />
 
               <div className="card-actions justify-end mt-4">
                 <Form method="post">

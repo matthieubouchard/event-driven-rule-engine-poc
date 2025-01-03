@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { RuleService } from './rule.service'
 import {
   FamilyStatusCondition,
@@ -17,8 +8,6 @@ import {
   CreateRuleDto,
   RuleCondition,
 } from './dto/create-rule.dto'
-import { UpdateRuleDto } from './dto/update-rule.dto'
-import { DbService } from '../db/db.service'
 import { ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { Rule, RuleVersion } from './dto/rule.dto'
 
@@ -34,19 +23,14 @@ import { Rule, RuleVersion } from './dto/rule.dto'
 )
 @Controller('rules')
 export class RuleController {
-  constructor(
-    private readonly ruleService: RuleService,
-    private readonly dbService: DbService,
-  ) {}
+  constructor(private readonly ruleService: RuleService) {}
 
   @Post()
   createRule(@Body() createRuleDto: CreateRuleDto) {
-    console.log('hitting route!!', createRuleDto)
     return this.ruleService.createRule(createRuleDto)
   }
   @Put(':id')
   updateRule(@Param('id') id: string, @Body() updatedRule: CreateRuleDto) {
-    console.log('hittingupdate route route!!', updatedRule)
     return this.ruleService.updateRule(id, updatedRule)
   }
 
@@ -67,13 +51,8 @@ export class RuleController {
     return this.ruleService.findOne(id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRuleDto: UpdateRuleDto) {
-    return this.ruleService.update(+id, updateRuleDto)
-  }
-
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ruleService.remove(+id)
+  softDelete(@Param('id') id: string) {
+    return this.ruleService.softDelete(id)
   }
 }
