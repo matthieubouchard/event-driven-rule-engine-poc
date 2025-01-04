@@ -1,16 +1,6 @@
 import {z} from "zod";
 import {RuleConditionFact, FamilyStatusEnum} from "@server/src/api_docs/api";
 import {parseWithZod} from "@conform-to/zod";
-// const booleanConditionSchema = (val: unknown) => {
-//   console.log("Validating boolean condition:", val, typeof val);
-//   if (typeof val === "string") {
-//     return val.toLowerCase() === "true";
-//   }
-//   if (typeof val === "boolean") {
-//     return val;
-//   }
-//   return false;
-// };
 
 const conditionSchema = z.discriminatedUnion("fact", [
   z.object({
@@ -47,19 +37,26 @@ export const transformAndValidateFormData = (formData: FormData) => {
   const result = parseWithZod(formData, {
     schema: formSchema,
   });
+  console.log("initial resultl", result);
 
   if (result.payload) {
     // Transform the conditions after validation
-    result.payload.conditions = result.payload.conditions.map((condition) => {
-      if (condition.fact === RuleConditionFact.FamilyStatus) {
-        return condition;
+    // eslint-disable-next
+    result.payload.conditions = result.payload.conditions.map(
+      (condition: {
+        fact: RuleConditionFact;
+        value: string | boolean | FamilyStatusEnum;
+      }) => {
+        if (condition.fact === RuleConditionFact.FamilyStatus) {
+          return condition;
+        }
+        // this is a workaround because zod is not coercing 'true'/'false' to booleans
+        return {
+          ...condition,
+          value: condition.value === "true",
+        };
       }
-      // this is a workaround because zod is not coercing 'true'/'false' to booleans
-      return {
-        ...condition,
-        value: condition.value === "true",
-      };
-    });
+    );
   }
   console.log("Transformed result:", result);
   return result;
