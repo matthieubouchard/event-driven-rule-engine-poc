@@ -34,4 +34,13 @@ export class NotificationController {
       timestamp: new Date().toISOString(),
     })
   }
+  @EventPattern(KAFKA_TOPICS.APPLICATION_SUBMITTED.name)
+  async handleApplicationSubmit(message: any) {
+    console.log('RECEIVED NOTIFICAToin in event pattern', message)
+    this.clientEventEmitter.next({
+      type: KAFKA_TOPICS.APPLICATION_SUBMITTED.name,
+      payload: message,
+      timestamp: new Date().toISOString(),
+    })
+  }
 }

@@ -14,10 +14,6 @@ export class RuleEvaluationController {
 
   @EventPattern(KAFKA_TOPICS.APPLICATION_SUBMITTED.name)
   async handleApplication(@Payload() message: any) {
-    console.log('RULE EVAL CONSUMER RECEIVED:', {
-      consumerId: 'rule-evaluation',
-      message,
-    })
     const result = await this.ruleEvalService.evaluateApplicationRules(
       message.payload.applicationId,
     )

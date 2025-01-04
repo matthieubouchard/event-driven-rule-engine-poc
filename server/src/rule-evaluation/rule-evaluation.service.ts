@@ -34,6 +34,8 @@ export class RuleEvaluationService {
       console.log('RULE VERSION', ruleVersion)
       const conditions = get(ruleVersion, 'ruleJson.conditions', [])
       const actions = get(ruleVersion, 'ruleJson.actions', [])
+      console.log('conditions', conditions)
+
       engine.addRule({
         name: ruleVersion.name,
         event: {
@@ -60,6 +62,8 @@ export class RuleEvaluationService {
       isBusinessOwner: application.isBusinessOwner,
       filedUsTaxes2021: application.filedUsTaxes2021,
     }
+    console.log('application', application)
+    console.log('facts', facts)
 
     try {
       const result = await engine.run(facts)

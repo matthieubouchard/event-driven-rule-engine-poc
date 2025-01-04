@@ -10,7 +10,9 @@ import {
   RuleConditionFact,
   FamilyStatusEnum,
 } from "@server/src/api_docs/api";
-import {formSchema} from "./helper";
+import {formSchema, transformAndValidateFormData} from "./helper";
+import {apiClient} from "../../../apiClient";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
 
 export interface RuleFormProps {
   initialData?: {
@@ -23,15 +25,31 @@ export interface RuleFormProps {
   };
   method: FormMethod;
 }
-// console.log("RULECONDITN", RuleCondition)
+
+export async function loader() {
+  const [documentsRes] = await Promise.all([
+    apiClient.documentControllerFindAll(),
+  ]);
+
+  if (!documentsRes.ok) {
+    throw new Response("Documents not found", {status: 404});
+  }
+
+  const [documents] = await Promise.all([documentsRes.json()]);
+  return json({documents});
+}
 
 export default function RuleForm({
   initialData,
   method = "post",
 }: RuleFormProps) {
   const {documents} = useLoaderData<typeof loader>();
-  console.log("GOT DOCUMENTS", documents);
   const navigate = useNavigate();
+
+  // Log initialData when component mounts
+  useEffect(() => {
+    console.log("Initial data:", initialData);
+  }, [initialData]);
 
   const [form, fields] = useForm({
     defaultValue: initialData ?? {
@@ -49,16 +67,13 @@ export default function RuleForm({
         },
       ],
     },
+    shouldRevalidate: "onBlur",
     onValidate({formData}) {
-      const result = parseWithZod(formData, {schema: formSchema});
-      console.log("Form validation result:", result);
-      if (result.status === "error") {
-        console.log("Validation errors:", result.error);
-      }
+      const result = transformAndValidateFormData(formData);
       return result;
     },
-    shouldValidate: "onBlur",
   });
+
   useEffect(() => {
     if (initialData) {
       form.validate();
@@ -88,21 +103,18 @@ export default function RuleForm({
 
   const conditions = fields.conditions.getFieldList();
   const actions = fields.actions.getFieldList();
-  const nameField = fields.name;
-  console.log("name field", nameField.errors);
 
-  const renderConditionInput = (condition) => {
-    console.log("CONDITION", condition.value.fact, condition.value);
+  const renderConditionInput = (condition, index) => {
+    // Get the current condition from initialData if it exists
+    const initialCondition = initialData?.conditions?.[index];
+    const fact = condition.value?.fact;
+    const value = initialCondition?.value ?? condition.value?.value;
 
-    // Ensure we have both type and value before rendering
-    if (!condition.value?.fact) {
-      console.warn("Missing condition fact:", condition);
+    if (!fact) {
       return null;
     }
 
-    const value = String(condition.value.value); // Convert to string for select comparison
-
-    switch (condition.value.fact) {
+    switch (fact) {
       case RuleConditionFact.FamilyStatus:
         return (
           <select
@@ -115,29 +127,18 @@ export default function RuleForm({
           </select>
         );
       case RuleConditionFact.IsBusinessOwner:
-        return (
-          <select
-            className="select select-bordered w-[240px]"
-            name={`${condition.name}.value`}
-            defaultValue={value}
-          >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        );
       case RuleConditionFact.FiledUsTaxes2021:
         return (
           <select
             className="select select-bordered w-[240px]"
             name={`${condition.name}.value`}
-            defaultValue={value}
+            defaultValue={String(value)}
           >
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
         );
       default:
-        console.warn("Unknown condition type:", condition.value.fact);
         return null;
     }
   };
@@ -185,13 +186,11 @@ export default function RuleForm({
               defaultValue={initialData?.name}
             />
             {!!fields?.name?.errors?.length &&
-              fields.name.errors.map((error) => {
-                return (
-                  <div key={error} className="text-error text-sm mt-1">
-                    {error}
-                  </div>
-                );
-              })}
+              fields.name.errors.map((error) => (
+                <div key={error} className="text-error text-sm mt-1">
+                  {error}
+                </div>
+              ))}
           </div>
           <div className="flex-1">
             <input
@@ -202,13 +201,11 @@ export default function RuleForm({
               defaultValue={initialData?.description}
             />
             {!!fields?.description?.errors?.length &&
-              fields.description.errors.map((error) => {
-                return (
-                  <div key={error} className="text-error text-sm mt-1">
-                    {error}
-                  </div>
-                );
-              })}
+              fields.description.errors.map((error) => (
+                <div key={error} className="text-error text-sm mt-1">
+                  {error}
+                </div>
+              ))}
           </div>
         </div>
 
@@ -252,7 +249,7 @@ export default function RuleForm({
                       Filed 2021 Taxes
                     </option>
                   </select>
-                  {renderConditionInput(condition)}
+                  {renderConditionInput(condition, index)}
                   {conditions.length > 1 && (
                     <button
                       type="button"
@@ -318,52 +315,41 @@ export default function RuleForm({
               Actions
             </h2>
 
-            {actions.map((action, index) => {
-              console.log("action.value", action.value);
-              console.log("action", action.name);
-              return (
-                <div key={action.key}>
-                  <div className="flex gap-3 mt-4">
-                    <select
-                      className="select select-bordered w-[240px]"
-                      name={`${action.name}.value`}
-                      defaultValue={action.value?.value}
+            {actions.map((action, index) => (
+              <div key={action.key}>
+                <div className="flex gap-3 mt-4">
+                  <select
+                    className="select select-bordered w-[240px]"
+                    name={`${action.name}.value`}
+                    defaultValue={action.value?.value}
+                  >
+                    {documents.map(({id, name}: {id: string; name: string}) => (
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Description of Document"
+                    className="input input-bordered flex-1"
+                    name={`${action.name}.description`}
+                    defaultValue={action.value?.description}
+                  />
+                  {actions.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm text-error"
+                      onClick={() =>
+                        form.remove({name: fields.actions.name, index})
+                      }
                     >
-                      {documents.map(
-                        ({id, name}: {id: string; name: string}) => (
-                          <option key={id} value={id}>
-                            {name}
-                          </option>
-                        )
-                      )}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="Description of Document"
-                      className="input input-bordered flex-1"
-                      name={`${action.name}.description`}
-                      defaultValue={action.value?.description}
-                    />
-                    {actions.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm text-error"
-                        onClick={() =>
-                          form.remove({name: fields.actions.name, index})
-                        }
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                  {/* {action.error && (
-                    <div className="text-error text-sm mt-1">
-                      {action.error}
-                    </div>
-                  )} */}
+                      ×
+                    </button>
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
 
             <button
               type="button"

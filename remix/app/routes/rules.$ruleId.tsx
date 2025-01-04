@@ -4,6 +4,7 @@ import {redirect, useLoaderData, useNavigation} from "@remix-run/react";
 import {parseWithZod} from "@conform-to/zod";
 import {formSchema} from "../components/forms/Rule/helper";
 import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
+import {RuleConditionFact} from "@server/src/api_docs/api";
 
 export async function loader({params}: LoaderFunctionArgs) {
   const [ruleRes, documentsRes] = await Promise.all([
@@ -24,7 +25,7 @@ export async function loader({params}: LoaderFunctionArgs) {
 }
 
 export default function EditRule() {
-  const {rule, documents} = useLoaderData<typeof loader>();
+  const {rule} = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   // Show loading state during navigation
@@ -55,6 +56,22 @@ export async function action({request, params}: ActionFunctionArgs) {
   if (submission.status !== "success") {
     return json(submission.reply());
   }
+
+  if (submission.payload) {
+    // Transform the conditions after validation
+    submission.payload.conditions = submission.payload.conditions.map(
+      (condition) => {
+        if (condition.fact === RuleConditionFact.FamilyStatus) {
+          return condition;
+        }
+        return {
+          ...condition,
+          value: condition.value === "true",
+        };
+      }
+    );
+  }
+  console.log("submitssion payload", submission.payload);
   const res = await apiClient.ruleControllerUpdateRule(
     params.ruleId as string,
     submission.payload

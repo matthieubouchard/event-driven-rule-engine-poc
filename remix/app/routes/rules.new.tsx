@@ -4,6 +4,7 @@ import {apiClient} from "../apiClient";
 import RuleForm from "../components/forms/Rule/RuleForm";
 import {formSchema} from "../components/forms/Rule/helper";
 import {redirect} from "@remix-run/react";
+import {RuleConditionFact} from "@server/src/api_docs/api";
 
 export async function loader() {
   const res = await apiClient.documentControllerFindAll();
@@ -26,6 +27,20 @@ export async function action({request}: ActionFunctionArgs) {
 
   if (submission.status !== "success") {
     return json(submission.reply());
+  }
+  if (submission.payload) {
+    // Transform the conditions after validation
+    submission.payload.conditions = submission.payload.conditions.map(
+      (condition) => {
+        if (condition.fact === RuleConditionFact.FamilyStatus) {
+          return condition;
+        }
+        return {
+          ...condition,
+          value: condition.value === "true",
+        };
+      }
+    );
   }
   const res = await apiClient.ruleControllerCreateRule(submission.payload);
   console.log("RESPONSE FROM SAVE!!!", res);

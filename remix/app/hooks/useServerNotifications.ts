@@ -1,3 +1,4 @@
+import {useRevalidator} from "@remix-run/react";
 import {useState, useEffect} from "react";
 
 type Notification = {
@@ -16,6 +17,7 @@ export function useServerNotifications(
     "connecting" | "connected" | "disconnected"
   >("connecting");
   const NOTIFICATION_DURATION = 5000;
+  const validator = useRevalidator();
 
   useEffect(() => {
     const eventSource = new EventSource(endpoint);
@@ -27,6 +29,7 @@ export function useServerNotifications(
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      validator.revalidate();
       const newNotification = {
         ...data,
         id: crypto.randomUUID(),

@@ -17,7 +17,7 @@ export async function action({request}: ActionFunctionArgs) {
   const formData = await request.formData();
   const applicationId = formData.get("applicationId");
   const res = await apiClient.applicationControllerProcessApplication(
-    applicationId!
+    applicationId as unknown as string
   );
   if (!res.ok)
     throw new Response("Failed to process application", {
@@ -25,10 +25,7 @@ export async function action({request}: ActionFunctionArgs) {
     });
 
   console.log(`Processing application ${applicationId}`);
-  // stubbing this to re-load page data
-  setTimeout(() => {
-    redirect("/applications");
-  }, 3000);
+
   return json({success: true});
 }
 

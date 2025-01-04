@@ -56,11 +56,8 @@ export default function App() {
           <div key={notification.id}>
             <NotificationToast
               type={notification.type}
-              message={`${notification.type}: ${JSON.stringify(
-                notification.payload.payload,
-                null,
-                2
-              )}`}
+              title={notification.type}
+              message={JSON.stringify(notification.payload.payload, null, 2)}
               isVisible={notification.isVisible}
             />
           </div>

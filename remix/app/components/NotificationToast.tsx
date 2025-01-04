@@ -1,23 +1,29 @@
-// components/NotificationToast.tsx
 import {FC} from "react";
 
 interface NotificationProps {
-  type: "RULE_EVALUATED" | "DOCUMENT_REQUESTED" | "APPLICATION_SUBMITTED";
+  type: string;
   message: string;
   isVisible: boolean;
+  title: string;
 }
 
 export const NotificationToast: FC<NotificationProps> = ({
   type,
   message,
+  title,
   isVisible,
 }) => {
+  console.log(type);
   const getAlertType = () => {
     switch (type) {
       case "RULE_EVALUATED":
         return "alert-info";
-      case "DOCUMENT_REQUESTED":
+      case "application.submitted":
         return "alert-warning";
+      case "document.requested":
+        return "alert-info";
+      case "document.request.created":
+        return "alert-info";
       default:
         return "alert-success";
     }
@@ -25,12 +31,12 @@ export const NotificationToast: FC<NotificationProps> = ({
 
   return (
     <div
-      className={`alert ${getAlertType()} transition-opacity duration-500 ${
+      className={`alert ${getAlertType()} transition-opacity duration-500 flex flex-col items-start ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <br />
-      <div>{message}</div>
+      <h3 className="font-bold">{title.toUpperCase()}</h3>
+      <p className="mt-2">{message}</p>
     </div>
   );
 };
