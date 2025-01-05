@@ -1,13 +1,15 @@
 import { NestFactory } from '@nestjs/core'
 import * as fs from 'fs'
-import * as path from 'path'
-import { AppModule } from './app.module'
 import { NestExpressApplication } from '@nestjs/platform-express'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { MicroserviceOptions } from '@nestjs/microservices'
+import { exec } from 'child_process'
+import { ValidationPipe } from '@nestjs/common'
+import * as path from 'path'
+
+import { AppModule } from './app.module'
 import { getRemixHandler, broadcastOnReady, PUBLIC_PATH } from './remix'
 import * as serveStatic from 'serve-static'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { exec } from 'child_process'
 import { mainClientConfig } from './pubsub/config'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
@@ -55,6 +57,14 @@ async function bootstrap() {
 
   app.enableCors()
   app.setGlobalPrefix('api')
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  )
 
   // setup swagger docs
   await setupSwagger(app)

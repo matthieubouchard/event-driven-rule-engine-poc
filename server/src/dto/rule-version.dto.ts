@@ -1,19 +1,27 @@
 import { ApiProperty, ApiExtraModels } from '@nestjs/swagger'
 import { RuleType } from '@prisma/client'
 import {
+  RuleConditionDto,
   FamilyStatusCondition,
   BusinessOwnerCondition,
   Filed2021Condition,
-  Action,
-} from './create-rule.dto'
+} from './rule-condition.dto'
+import { Action } from './rule-action.dto'
+
+export class RuleVersionName {
+  @ApiProperty()
+  version: number
+
+  @ApiProperty()
+  name: string
+}
 
 @ApiExtraModels(
   FamilyStatusCondition,
   BusinessOwnerCondition,
   Filed2021Condition,
-  Action,
 )
-export class RuleVersion {
+export class RuleVersionDto {
   @ApiProperty()
   id: string
 
@@ -35,10 +43,6 @@ export class RuleVersion {
       conditions: {
         type: 'array',
         items: {
-          type: 'object',
-          discriminator: {
-            propertyName: 'fact',
-          },
           oneOf: [
             { $ref: '#/components/schemas/FamilyStatusCondition' },
             { $ref: '#/components/schemas/BusinessOwnerCondition' },
@@ -56,23 +60,7 @@ export class RuleVersion {
     required: ['conditions', 'actions'],
   })
   ruleJson: {
-    conditions: (
-      | FamilyStatusCondition
-      | BusinessOwnerCondition
-      | Filed2021Condition
-    )[]
+    conditions: RuleConditionDto[]
     actions: Action[]
   }
-}
-
-@ApiExtraModels(RuleVersion)
-export class Rule {
-  @ApiProperty()
-  id: string
-
-  @ApiProperty({ required: false })
-  active?: boolean
-
-  @ApiProperty({ type: [RuleVersion] })
-  versions: RuleVersion[]
 }

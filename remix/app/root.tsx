@@ -1,5 +1,4 @@
 import {
-  Link,
   Links,
   Meta,
   Outlet,
@@ -7,10 +6,11 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type {LinksFunction} from "@remix-run/node";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 import styles from "./tailwind.css";
 import Nav from "./components/Nav";
-import {useServerNotifications} from "./hooks/useServerNotifications";
+import {useServerNotifications} from "./hooks/api/useServerNotifications";
 import {NotificationToast} from "./components/NotificationToast";
 
 export const links: LinksFunction = () => [
@@ -48,7 +48,15 @@ export function Layout({children}: {children: React.ReactNode}) {
 
 export default function App() {
   const {notifications, status} = useServerNotifications();
-  console.table({notifications, status});
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000,
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  });
   return (
     <>
       <div className="fixed top-4 right-10 z-50 flex flex-col gap-2 w-1/4">
@@ -63,7 +71,9 @@ export default function App() {
           </div>
         ))}
       </div>
-      <Outlet />;
+      <QueryClientProvider client={queryClient}>
+        <Outlet />;
+      </QueryClientProvider>
     </>
   );
 }

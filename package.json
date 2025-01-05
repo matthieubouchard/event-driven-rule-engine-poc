@@ -17,6 +17,7 @@
   "dependencies": {
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^10.4.15",
+    "@types/lodash": "^4.17.14",
     "json-rule-engine": "^0.0.3",
     "lodash": "^4.17.21"
   }

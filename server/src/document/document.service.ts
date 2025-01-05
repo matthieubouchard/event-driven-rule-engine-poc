@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DocumentStatus } from '@prisma/client'
 import { map } from 'lodash'
 import { DbService } from 'src/db/db.service'
-import { Action } from 'src/rule/dto/create-rule.dto'
+import { Action } from '../dto'
 
 @Injectable()
 export class DocumentService {

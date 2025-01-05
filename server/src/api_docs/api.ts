@@ -9,8 +9,10 @@
  * ---------------------------------------------------------------
  */
 
-export enum FamilyStatusFact {
+export enum RuleConditionFact {
   FamilyStatus = 'familyStatus',
+  IsBusinessOwner = 'isBusinessOwner',
+  FiledUsTaxes2021 = 'filedUsTaxes2021',
 }
 
 export enum FamilyStatusEnum {
@@ -19,25 +21,17 @@ export enum FamilyStatusEnum {
 }
 
 export interface FamilyStatusCondition {
-  fact: FamilyStatusFact
+  fact: RuleConditionFact
   value: FamilyStatusEnum
 }
 
-export enum BusinessOwnerFact {
-  IsBusinessOwner = 'isBusinessOwner',
-}
-
 export interface BusinessOwnerCondition {
-  fact: BusinessOwnerFact
+  fact: RuleConditionFact
   value: boolean
 }
 
-export enum Filed2021Fact {
-  FiledUsTaxes2021 = 'filedUsTaxes2021',
-}
-
 export interface Filed2021Condition {
-  fact: Filed2021Fact
+  fact: RuleConditionFact
   value: boolean
 }
 
@@ -53,21 +47,11 @@ export interface CreateRuleDto {
   description: string
   /** @default "APPLICATION" */
   type: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
-  conditions: (
-    | ({
-        fact: 'familyStatus'
-      } & FamilyStatusCondition)
-    | ({
-        fact: 'isBusinessOwner'
-      } & BusinessOwnerCondition)
-    | ({
-        fact: 'filedUsTaxes2021'
-      } & Filed2021Condition)
-  )[]
+  conditions: (FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition)[]
   actions: Action[]
 }
 
-export interface RuleVersion {
+export interface RuleVersionDto {
   id: string
   version: number
   name: string
@@ -79,21 +63,14 @@ export interface RuleVersion {
   }
 }
 
-export interface Rule {
+export interface RuleDto {
   id: string
   active?: boolean
-  versions: RuleVersion[]
+  versions: RuleVersionDto[]
 }
 
-export enum RuleConditionFact {
-  FamilyStatus = 'familyStatus',
-  IsBusinessOwner = 'isBusinessOwner',
-  FiledUsTaxes2021 = 'filedUsTaxes2021',
-}
-
-export interface RuleCondition {
-  /** The type of condition */
-  value: RuleConditionFact
+export interface RuleConditionsInput {
+  conditions: any[][]
 }
 
 export interface StudentDto {
@@ -107,13 +84,13 @@ export interface SchoolDto {
   name: string
 }
 
-export interface RuleVersionDto {
+export interface RuleVersionName {
   version: number
   name: string
 }
 
 export interface RuleAuditDto {
-  ruleVersion: RuleVersionDto
+  ruleVersion: RuleVersionName
   matched: boolean
   id: string
   /** @format date-time */
@@ -394,7 +371,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/rules
      */
     ruleControllerFindAll: (params: RequestParams = {}) =>
-      this.request<Rule[], any>({
+      this.request<RuleDto[], any>({
         path: `/api/rules`,
         method: 'GET',
         format: 'json',
@@ -442,6 +419,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<void, any>({
         path: `/api/rules/${id}`,
         method: 'DELETE',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags RuleEvaluation
+     * @name RuleEvaluationControllerGetMatchingApplicationsCount
+     * @summary Get count of applications matching rule conditions
+     * @request POST:/api/preview-count
+     */
+    ruleEvaluationControllerGetMatchingApplicationsCount: (data: RuleConditionsInput, params: RequestParams = {}) =>
+      this.request<
+        {
+          count?: number
+        },
+        any
+      >({
+        path: `/api/preview-count`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
 

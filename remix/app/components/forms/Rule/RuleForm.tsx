@@ -1,7 +1,7 @@
 import {useEffect} from "react";
 import {useForm} from "@conform-to/react";
-import {parseWithZod} from "@conform-to/zod";
 import {Form, FormMethod, useLoaderData, useNavigate} from "@remix-run/react";
+import {json} from "@remix-run/node";
 import {
   FamilyStatusCondition,
   BusinessOwnerCondition,
@@ -9,10 +9,12 @@ import {
   Action,
   RuleConditionFact,
   FamilyStatusEnum,
+  RuleConditionsInput,
 } from "@server/src/api_docs/api";
-import {formSchema, transformAndValidateFormData} from "./helper";
+
+import {transformAndValidateFormData} from "./helper";
 import {apiClient} from "../../../apiClient";
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {useMatchingApplications} from "~/hooks/api/useMatchingRuleCount";
 
 export interface RuleFormProps {
   initialData?: {
@@ -46,11 +48,6 @@ export default function RuleForm({
   const {documents} = useLoaderData<typeof loader>();
   const navigate = useNavigate();
 
-  // Log initialData when component mounts
-  useEffect(() => {
-    console.log("Initial data:", initialData);
-  }, [initialData]);
-
   const [form, fields] = useForm({
     defaultValue: initialData ?? {
       conditions: [
@@ -73,12 +70,12 @@ export default function RuleForm({
       return result;
     },
   });
-
   useEffect(() => {
     if (initialData) {
-      form.validate();
+      // update values for matching results hook
+      form.update(initialData);
     }
-  }, [initialData, form]);
+  }, [initialData]);
 
   const handleAddCondition = () => {
     form.insert({
@@ -103,45 +100,11 @@ export default function RuleForm({
 
   const conditions = fields.conditions.getFieldList();
   const actions = fields.actions.getFieldList();
-
-  const renderConditionInput = (condition, index) => {
-    // Get the current condition from initialData if it exists
-    const initialCondition = initialData?.conditions?.[index];
-    const fact = condition.value?.fact;
-    const value = initialCondition?.value ?? condition.value?.value;
-
-    if (!fact) {
-      return null;
-    }
-
-    switch (fact) {
-      case RuleConditionFact.FamilyStatus:
-        return (
-          <select
-            className="select select-bordered w-[240px]"
-            name={`${condition.name}.value`}
-            defaultValue={value}
-          >
-            <option value={FamilyStatusEnum.NEW}>New</option>
-            <option value={FamilyStatusEnum.RETURNING}>Returning</option>
-          </select>
-        );
-      case RuleConditionFact.IsBusinessOwner:
-      case RuleConditionFact.FiledUsTaxes2021:
-        return (
-          <select
-            className="select select-bordered w-[240px]"
-            name={`${condition.name}.value`}
-            defaultValue={String(value)}
-          >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        );
-      default:
-        return null;
-    }
-  };
+  const currentConditions = (fields?.conditions?.value ??
+    []) as unknown as RuleConditionsInput;
+  console.log(currentConditions);
+  const {data} = useMatchingApplications(currentConditions);
+  const count = data?.count ?? 0;
 
   return (
     <Form id={form.id} onSubmit={form.onSubmit} method={method}>
@@ -230,40 +193,91 @@ export default function RuleForm({
               Conditions
             </h2>
 
-            {conditions.map((condition, index) => (
-              <div key={condition.key}>
-                <div className="flex items-center gap-2 mt-4">
-                  {index === 0 ? <span>If</span> : <span>Or</span>}
-                  <select
-                    className="select select-bordered w-[240px]"
-                    name={`${condition.name}.fact`}
-                    defaultValue={condition?.value?.fact}
-                  >
-                    <option value={RuleConditionFact.FamilyStatus}>
-                      Family Status
-                    </option>
-                    <option value={RuleConditionFact.IsBusinessOwner}>
-                      Business Owner
-                    </option>
-                    <option value={RuleConditionFact.FiledUsTaxes2021}>
-                      Filed 2021 Taxes
-                    </option>
-                  </select>
-                  {renderConditionInput(condition, index)}
-                  {conditions.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm text-error"
-                      onClick={() =>
-                        form.remove({name: fields.conditions.name, index})
-                      }
+            {conditions.map((condition, index) => {
+              const fact =
+                condition.value?.fact ?? RuleConditionFact.FamilyStatus;
+              const value = String(
+                condition.value?.value ?? FamilyStatusEnum.NEW
+              );
+
+              return (
+                <div key={condition.key}>
+                  <div className="flex items-center gap-2 mt-4">
+                    {index === 0 ? <span>If</span> : <span>Or</span>}
+                    <select
+                      className="select select-bordered w-[240px]"
+                      name={`${condition.name}.fact`}
+                      value={fact}
+                      onChange={(e) => {
+                        // this is handling updates for the hook that fetches rule matches
+                        const newFact = e.target.value as RuleConditionFact;
+                        form.update({
+                          [`conditions.${index}.fact`]: newFact,
+                          [`conditions.${index}.value`]:
+                            newFact === RuleConditionFact.FamilyStatus
+                              ? FamilyStatusEnum.NEW
+                              : "true",
+                        });
+                      }}
                     >
-                      ×
-                    </button>
-                  )}
+                      <option value={RuleConditionFact.FamilyStatus}>
+                        Family Status
+                      </option>
+                      <option value={RuleConditionFact.IsBusinessOwner}>
+                        Business Owner
+                      </option>
+                      <option value={RuleConditionFact.FiledUsTaxes2021}>
+                        Filed 2021 Taxes
+                      </option>
+                    </select>
+
+                    {fact === RuleConditionFact.FamilyStatus ? (
+                      <select
+                        className="select select-bordered w-[240px]"
+                        name={`${condition.name}.value`}
+                        value={value}
+                        onChange={(e) => {
+                          form.update({
+                            [`conditions.${index}.value`]: e.target.value,
+                          });
+                        }}
+                      >
+                        <option value={FamilyStatusEnum.NEW}>New</option>
+                        <option value={FamilyStatusEnum.RETURNING}>
+                          Returning
+                        </option>
+                      </select>
+                    ) : (
+                      <select
+                        className="select select-bordered w-[240px]"
+                        name={`${condition.name}.value`}
+                        value={value}
+                        onChange={(e) => {
+                          form.update({
+                            [`conditions.${index}.value`]: e.target.value,
+                          });
+                        }}
+                      >
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    )}
+
+                    {conditions.length > 1 && (
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm text-error"
+                        onClick={() =>
+                          form.remove({name: fields.conditions.name, index})
+                        }
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <button
               type="button"
@@ -289,7 +303,7 @@ export default function RuleForm({
                   />
                 </svg>
               </div>
-              Given conditions match with 692 existing applicants.
+              Given conditions match with {count} existing applicants.
             </div>
           </div>
         </div>

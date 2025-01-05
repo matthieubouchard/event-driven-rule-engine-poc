@@ -1,11 +1,7 @@
-import { Controller, Get, Param, Post, Request, Res } from '@nestjs/common'
-import { Subject } from 'rxjs'
+import { Controller, Get, Param, Post } from '@nestjs/common'
 import { ApplicationService } from './application.service'
 import { ApiResponse } from '@nestjs/swagger'
-import {
-  ApplicationResponseDto,
-  GenericMutationResponse,
-} from './dto/application.dto'
+import { ApplicationResponseDto, GenericMutationResponse } from '../dto'
 
 @Controller('application')
 export class ApplicationController {
@@ -19,6 +15,6 @@ export class ApplicationController {
   @ApiResponse({ type: GenericMutationResponse })
   @Post('/:id')
   async processApplication(@Param('id') applicationId: string) {
-    await this.applicationService.processApplication(applicationId)
+    return await this.applicationService.processApplication(applicationId)
   }
 }

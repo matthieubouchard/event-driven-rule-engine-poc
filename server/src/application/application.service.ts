@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DbService } from 'src/db/db.service'
 import { PubSubService } from 'src/pubsub/pubsub.service'
+import { TryCatch } from 'decorators'
 
 @Injectable()
 export class ApplicationService {
@@ -8,6 +9,7 @@ export class ApplicationService {
     private readonly dbService: DbService,
     private readonly pubSubService: PubSubService,
   ) {}
+  @TryCatch({ defaultValue: [] })
   async findAll() {
     return this.dbService.client.application.findMany({
       select: {
@@ -39,7 +41,14 @@ export class ApplicationService {
       },
     })
   }
+  @TryCatch({
+    defaultValue: {
+      success: false,
+      message: `Error processing application`,
+    },
+  })
   async processApplication(applicationId: string) {
+    // throw new Error(" cna't do that now")
     await this.pubSubService.publish({
       topic: 'application.submitted',
       payload: {

@@ -1,6 +1,7 @@
 import {z} from "zod";
-import {RuleConditionFact, FamilyStatusEnum} from "@server/src/api_docs/api";
+import {map} from "lodash";
 import {parseWithZod} from "@conform-to/zod";
+import {RuleConditionFact, FamilyStatusEnum} from "@server/src/api_docs/api";
 
 const conditionSchema = z.discriminatedUnion("fact", [
   z.object({
@@ -37,12 +38,12 @@ export const transformAndValidateFormData = (formData: FormData) => {
   const result = parseWithZod(formData, {
     schema: formSchema,
   });
-  console.log("initial resultl", result);
 
+  // this is a janky workaround because zod is not coercing or preprocessing values
   if (result.payload) {
     // Transform the conditions after validation
-    // eslint-disable-next
-    result.payload.conditions = result.payload.conditions.map(
+    result.payload.conditions = map(
+      result.payload.conditions,
       (condition: {
         fact: RuleConditionFact;
         value: string | boolean | FamilyStatusEnum;
@@ -50,7 +51,6 @@ export const transformAndValidateFormData = (formData: FormData) => {
         if (condition.fact === RuleConditionFact.FamilyStatus) {
           return condition;
         }
-        // this is a workaround because zod is not coercing 'true'/'false' to booleans
         return {
           ...condition,
           value: condition.value === "true",
@@ -58,6 +58,5 @@ export const transformAndValidateFormData = (formData: FormData) => {
       }
     );
   }
-  console.log("Transformed result:", result);
   return result;
 };

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { CreateRuleDto } from './dto/create-rule.dto'
-import { UpdateRuleDto } from './dto/update-rule.dto'
+import { CreateRuleDto } from '../dto'
 import { DbService } from 'src/db/db.service'
 import { InputJsonValue } from '@prisma/client/runtime/library'
 import { RuleType } from '@prisma/client'
@@ -21,7 +20,7 @@ export class RuleService {
             description: createRuleDto?.description,
             version: 0,
             ruleJson: ruleJson as unknown as InputJsonValue,
-            type: createRuleDto.type ?? RuleType.APPLICATION,
+            type: createRuleDto?.type ?? RuleType.APPLICATION,
           },
         },
       },
@@ -50,7 +49,7 @@ export class RuleService {
             description: updatedRule?.description,
             version: latestVersion.version + 1,
             ruleJson: ruleJson as unknown as InputJsonValue,
-            type: updatedRule.type ?? RuleType.APPLICATION,
+            type: updatedRule?.type ?? RuleType.APPLICATION,
           },
         },
       },

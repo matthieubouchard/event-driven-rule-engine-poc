@@ -1,26 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { RuleService } from './rule.service'
-import {
-  FamilyStatusCondition,
-  BusinessOwnerCondition,
-  Filed2021Condition,
-  Action,
-  CreateRuleDto,
-  RuleCondition,
-} from './dto/create-rule.dto'
-import { ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { Rule, RuleVersion } from './dto/rule.dto'
+import { CreateRuleDto, RuleDto } from '../dto'
+import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
-@ApiExtraModels(
-  FamilyStatusCondition,
-  BusinessOwnerCondition,
-  Filed2021Condition,
-  Action,
-  CreateRuleDto,
-  RuleVersion,
-  Rule,
-  RuleCondition,
-)
 @Controller('rules')
 export class RuleController {
   constructor(private readonly ruleService: RuleService) {}
@@ -31,6 +13,7 @@ export class RuleController {
   }
   @Put(':id')
   updateRule(@Param('id') id: string, @Body() updatedRule: CreateRuleDto) {
+    console.log('getting to the controller????', updatedRule)
     return this.ruleService.updateRule(id, updatedRule)
   }
 
@@ -38,7 +21,7 @@ export class RuleController {
   @ApiResponse({
     status: 200,
     description: 'Rules found',
-    type: Rule,
+    type: RuleDto,
     isArray: true,
   })
   @Get()

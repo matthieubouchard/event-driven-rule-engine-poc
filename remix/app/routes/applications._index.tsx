@@ -3,7 +3,7 @@ import {ActionFunctionArgs, json} from "@remix-run/node";
 import {apiClient} from "../apiClient";
 import {ApplicationResponseDto} from "@server/src/api_docs/api";
 import RuleAuditLogTable from "../components/RuleAuditLogTable";
-import DocumentRequestsTable from "~/components/DocumentRequestTable";
+import DocumentRequestsTable from "../components/DocumentRequestTable";
 
 export async function loader(): Promise<ApplicationResponseDto[]> {
   const rules = await apiClient.applicationControllerFindAll();
@@ -19,14 +19,17 @@ export async function action({request}: ActionFunctionArgs) {
   const res = await apiClient.applicationControllerProcessApplication(
     applicationId as unknown as string
   );
-  if (!res.ok)
+
+  if (!res.ok) {
     throw new Response("Failed to process application", {
       status: 500,
     });
+    // TODO: handle notificaitons
+  }
 
   console.log(`Processing application ${applicationId}`);
 
-  return json({success: true});
+  return json(res);
 }
 
 const renderBirthday = (dateString: string) => {

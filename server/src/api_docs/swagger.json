@@ -36,7 +36,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Rule"
+                    "$ref": "#/components/schemas/RuleDto"
                   }
                 }
               }
@@ -121,6 +121,43 @@
         },
         "tags": [
           "Rule"
+        ]
+      }
+    },
+    "/api/preview-count": {
+      "post": {
+        "operationId": "RuleEvaluationController_getMatchingApplicationsCount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleConditionsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get count of applications matching rule conditions",
+        "tags": [
+          "RuleEvaluation"
         ]
       }
     },
@@ -229,10 +266,12 @@
       }
     },
     "schemas": {
-      "FamilyStatusFact": {
+      "RuleConditionFact": {
         "type": "string",
         "enum": [
-          "familyStatus"
+          "familyStatus",
+          "isBusinessOwner",
+          "filedUsTaxes2021"
         ]
       },
       "FamilyStatusEnum": {
@@ -248,7 +287,7 @@
           "fact": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/FamilyStatusFact"
+                "$ref": "#/components/schemas/RuleConditionFact"
               }
             ]
           },
@@ -265,19 +304,13 @@
           "value"
         ]
       },
-      "BusinessOwnerFact": {
-        "type": "string",
-        "enum": [
-          "isBusinessOwner"
-        ]
-      },
       "BusinessOwnerCondition": {
         "type": "object",
         "properties": {
           "fact": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/BusinessOwnerFact"
+                "$ref": "#/components/schemas/RuleConditionFact"
               }
             ]
           },
@@ -290,19 +323,13 @@
           "value"
         ]
       },
-      "Filed2021Fact": {
-        "type": "string",
-        "enum": [
-          "filedUsTaxes2021"
-        ]
-      },
       "Filed2021Condition": {
         "type": "object",
         "properties": {
           "fact": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/Filed2021Fact"
+                "$ref": "#/components/schemas/RuleConditionFact"
               }
             ]
           },
@@ -370,12 +397,7 @@
                 }
               ],
               "discriminator": {
-                "propertyName": "fact",
-                "mapping": {
-                  "familyStatus": "#/components/schemas/FamilyStatusCondition",
-                  "isBusinessOwner": "#/components/schemas/BusinessOwnerCondition",
-                  "filedUsTaxes2021": "#/components/schemas/Filed2021Condition"
-                }
+                "propertyName": "fact"
               }
             }
           },
@@ -394,7 +416,7 @@
           "actions"
         ]
       },
-      "RuleVersion": {
+      "RuleVersionDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -423,10 +445,6 @@
               "conditions": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "discriminator": {
-                    "propertyName": "fact"
-                  },
                   "oneOf": [
                     {
                       "$ref": "#/components/schemas/FamilyStatusCondition"
@@ -461,7 +479,7 @@
           "type"
         ]
       },
-      "Rule": {
+      "RuleDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -473,7 +491,7 @@
           "versions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RuleVersion"
+              "$ref": "#/components/schemas/RuleVersionDto"
             }
           }
         },
@@ -482,28 +500,18 @@
           "versions"
         ]
       },
-      "RuleConditionFact": {
-        "type": "string",
-        "enum": [
-          "familyStatus",
-          "isBusinessOwner",
-          "filedUsTaxes2021"
-        ]
-      },
-      "RuleCondition": {
+      "RuleConditionsInput": {
         "type": "object",
         "properties": {
-          "value": {
-            "description": "The type of condition",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RuleConditionFact"
-              }
-            ]
+          "conditions": {
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
           }
         },
         "required": [
-          "value"
+          "conditions"
         ]
       },
       "StudentDto": {
@@ -537,7 +545,7 @@
           "name"
         ]
       },
-      "RuleVersionDto": {
+      "RuleVersionName": {
         "type": "object",
         "properties": {
           "version": {
@@ -556,7 +564,7 @@
         "type": "object",
         "properties": {
           "ruleVersion": {
-            "$ref": "#/components/schemas/RuleVersionDto"
+            "$ref": "#/components/schemas/RuleVersionName"
           },
           "matched": {
             "type": "boolean"
