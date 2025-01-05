@@ -47,8 +47,8 @@ export class BusinessOwnerCondition {
   fact: RuleConditionFact.IS_BUSINESS_OWNER
 
   @ApiProperty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value === 'true' : value,
+  @Transform(
+    ({ value }) => (typeof value === 'string' ? value === 'true' : value), // removed comma here
   )
   @IsBoolean()
   value: boolean
@@ -62,8 +62,8 @@ export class Filed2021Condition {
   fact: RuleConditionFact.FILED_2021
 
   @ApiProperty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value === 'true' : value,
+  @Transform(
+    ({ value }) => (typeof value === 'string' ? value === 'true' : value), // removed comma here
   )
   @IsBoolean()
   value: boolean

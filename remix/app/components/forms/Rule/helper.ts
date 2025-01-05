@@ -10,13 +10,20 @@ const conditionSchema = z.discriminatedUnion("fact", [
   }),
   z.object({
     fact: z.literal(RuleConditionFact.IsBusinessOwner),
-    value: z.coerce.boolean(),
+    value: z.preprocess(
+      (val) => String(val).toLowerCase(),
+      z.enum(["true", "false"])
+    ),
   }),
   z.object({
     fact: z.literal(RuleConditionFact.FiledUsTaxes2021),
-    value: z.coerce.boolean(),
+    value: z.preprocess(
+      (val) => String(val).toLowerCase(),
+      z.enum(["true", "false"])
+    ),
   }),
 ]);
+
 export const formSchema = z.object({
   name: z.string().min(3, "Min length is 3"),
   description: z.string(),
@@ -38,25 +45,5 @@ export const transformAndValidateFormData = (formData: FormData) => {
   const result = parseWithZod(formData, {
     schema: formSchema,
   });
-
-  // this is a janky workaround because zod is not coercing or preprocessing values
-  if (result.payload) {
-    // Transform the conditions after validation
-    result.payload.conditions = map(
-      result.payload.conditions,
-      (condition: {
-        fact: RuleConditionFact;
-        value: string | boolean | FamilyStatusEnum;
-      }) => {
-        if (condition.fact === RuleConditionFact.FamilyStatus) {
-          return condition;
-        }
-        return {
-          ...condition,
-          value: condition.value === "true",
-        };
-      }
-    );
-  }
   return result;
 };

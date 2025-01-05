@@ -3,6 +3,7 @@
   "paths": {
     "/api/rules": {
       "post": {
+        "description": "Create version 0 of your first rule",
         "operationId": "RuleController_createRule",
         "parameters": [],
         "requestBody": {
@@ -16,16 +17,29 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "New rule id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "Create a new rule",
         "tags": [
           "Rule"
         ]
       },
       "get": {
-        "description": "test",
+        "description": "An array of rules with the latest version",
         "operationId": "RuleController_findAll",
         "parameters": [],
         "responses": {
@@ -51,6 +65,7 @@
     },
     "/api/rules/{id}": {
       "put": {
+        "description": "Will create a new ruleVersion",
         "operationId": "RuleController_updateRule",
         "parameters": [
           {
@@ -74,9 +89,22 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Updated rule id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "Update a rule by id",
         "tags": [
           "Rule"
         ]
@@ -95,7 +123,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Rule by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDto"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -116,7 +151,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Deactivate a rule by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "tags": [

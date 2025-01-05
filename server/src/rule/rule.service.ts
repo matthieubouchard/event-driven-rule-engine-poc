@@ -54,12 +54,12 @@ export class RuleService {
         },
       },
     })
-    console.log('updated rule', updatedRule)
     return rule
   }
 
   async findAll() {
     const rules = await this.dbService.client.rule.findMany({
+      where: { active: true },
       include: { versions: { orderBy: { version: 'desc' }, take: 1 } },
     })
     return rules
@@ -74,9 +74,10 @@ export class RuleService {
   }
 
   async softDelete(id: string) {
-    await this.dbService.client.rule.update({
+    const toDelete = await this.dbService.client.rule.update({
       where: { id },
       data: { active: false },
     })
+    return toDelete
   }
 }

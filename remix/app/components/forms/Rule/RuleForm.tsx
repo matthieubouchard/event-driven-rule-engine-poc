@@ -49,33 +49,35 @@ export default function RuleForm({
   const navigate = useNavigate();
 
   const [form, fields] = useForm({
-    defaultValue: initialData ?? {
-      conditions: [
-        {
-          fact: RuleConditionFact.FamilyStatus,
-          value: FamilyStatusEnum.NEW,
+    defaultValue: initialData
+      ? {
+          ...initialData,
+          conditions: initialData.conditions.map((condition) => ({
+            ...condition,
+            value: String(condition.value), // fieldList was dropping/coercing values
+          })),
+        }
+      : {
+          conditions: [
+            {
+              fact: RuleConditionFact.FamilyStatus,
+              value: FamilyStatusEnum.NEW,
+            },
+          ],
+          actions: [
+            {
+              type: "DOCUMENT_REQUEST",
+              value: documents[0].id,
+              description: "",
+            },
+          ],
         },
-      ],
-      actions: [
-        {
-          type: "DOCUMENT_REQUEST",
-          value: documents[0].id,
-          description: "",
-        },
-      ],
-    },
     shouldRevalidate: "onBlur",
     onValidate({formData}) {
       const result = transformAndValidateFormData(formData);
       return result;
     },
   });
-  useEffect(() => {
-    if (initialData) {
-      // update values for matching results hook
-      form.update(initialData);
-    }
-  }, [initialData]);
 
   const handleAddCondition = () => {
     form.insert({
@@ -102,7 +104,6 @@ export default function RuleForm({
   const actions = fields.actions.getFieldList();
   const currentConditions = (fields?.conditions?.value ??
     []) as unknown as RuleConditionsInput;
-  console.log(currentConditions);
   const {data} = useMatchingApplications(currentConditions);
   const count = data?.count ?? 0;
 
@@ -197,7 +198,9 @@ export default function RuleForm({
               const fact =
                 condition.value?.fact ?? RuleConditionFact.FamilyStatus;
               const value = String(
-                condition.value?.value ?? FamilyStatusEnum.NEW
+                condition.value?.value !== undefined
+                  ? condition.value.value
+                  : FamilyStatusEnum.NEW
               );
 
               return (
@@ -209,11 +212,10 @@ export default function RuleForm({
                       name={`${condition.name}.fact`}
                       value={fact}
                       onChange={(e) => {
-                        // this is handling updates for the hook that fetches rule matches
                         const newFact = e.target.value as RuleConditionFact;
                         form.update({
-                          [`conditions.${index}.fact`]: newFact,
-                          [`conditions.${index}.value`]:
+                          [`${condition.name}.fact`]: newFact,
+                          [`${condition.name}.value`]:
                             newFact === RuleConditionFact.FamilyStatus
                               ? FamilyStatusEnum.NEW
                               : "true",
@@ -238,7 +240,7 @@ export default function RuleForm({
                         value={value}
                         onChange={(e) => {
                           form.update({
-                            [`conditions.${index}.value`]: e.target.value,
+                            [`${condition.name}.value`]: e.target.value,
                           });
                         }}
                       >
@@ -254,7 +256,7 @@ export default function RuleForm({
                         value={value}
                         onChange={(e) => {
                           form.update({
-                            [`conditions.${index}.value`]: e.target.value,
+                            [`${condition.name}.value`]: e.target.value,
                           });
                         }}
                       >

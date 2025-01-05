@@ -128,7 +128,7 @@ export class RuleEvaluationService {
         ruleVersion,
         'ruleJson.conditions',
         [],
-      ) as unknown as Record<string, string | boolean>[]
+      ) as unknown as any[]
       const actions = get(ruleVersion, 'ruleJson.actions', [])
       this.logger.log('conditions', conditions)
 
@@ -143,8 +143,9 @@ export class RuleEvaluationService {
           },
         },
         conditions: {
+          // eslint-disable-next-line
           any: map(conditions, (c) => ({
-            fact: String(c.fact),
+            fact: c.fact,
             operator: 'equal',
             value: c.value,
           })),

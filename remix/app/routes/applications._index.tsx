@@ -24,7 +24,6 @@ export async function action({request}: ActionFunctionArgs) {
     throw new Response("Failed to process application", {
       status: 500,
     });
-    // TODO: handle notificaitons
   }
 
   console.log(`Processing application ${applicationId}`);
@@ -42,13 +41,11 @@ const renderBirthday = (dateString: string) => {
 };
 export default function Applications() {
   const applications = useLoaderData<typeof loader>();
-
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Applications</h1>
       </div>
-
       <div className="grid grid-cols-1 gap-6">
         {applications.map((application) => (
           <div key={application.id} className="card bg-base-100 shadow-xl">
@@ -63,22 +60,50 @@ export default function Applications() {
                     {application.student.lastName} DOB:{" "}
                     {renderBirthday(application.student.dob)}
                   </h3>
-                  <div className="flex gap-2 mt-2">
-                    {application.isBusinessOwner && (
-                      <span className="badge badge-outline">
-                        Business Owner
-                      </span>
-                    )}
-                    {!application.filedUsTaxes2021 && (
-                      <span className="badge badge-outline">No 2021 Taxes</span>
-                    )}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Family Status Badge */}
+                    <span
+                      className={`badge ${
+                        application.familyStatus === "NEW"
+                          ? "badge-primary"
+                          : "badge-secondary"
+                      }`}
+                    >
+                      {application.familyStatus === "NEW"
+                        ? "New Family"
+                        : "Returning Family"}
+                    </span>
+
+                    {/* Business Owner Badge */}
+                    <span
+                      className={`badge ${
+                        application.isBusinessOwner
+                          ? "badge-info"
+                          : "badge-outline"
+                      }`}
+                    >
+                      {application.isBusinessOwner
+                        ? "Business Owner"
+                        : "Not Business Owner"}
+                    </span>
+
+                    {/* 2021 Taxes Badge */}
+                    <span
+                      className={`badge ${
+                        !application.filedUsTaxes2021
+                          ? "badge-warning"
+                          : "badge-success"
+                      }`}
+                    >
+                      {application.filedUsTaxes2021
+                        ? "Filed 2021 Taxes"
+                        : "No 2021 Taxes"}
+                    </span>
                   </div>
                 </div>
               </div>
-
               <DocumentRequestsTable requests={application.documentRequests} />
               <RuleAuditLogTable auditLog={application.ruleAudits} />
-
               <div className="card-actions justify-end mt-4">
                 <Form method="post">
                   <input
@@ -98,7 +123,6 @@ export default function Applications() {
           </div>
         ))}
       </div>
-
       {applications.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-600">No applications to review</p>

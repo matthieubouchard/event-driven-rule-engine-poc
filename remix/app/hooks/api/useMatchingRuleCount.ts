@@ -14,7 +14,6 @@ export function useMatchingApplications(conditions: RuleConditionsInput) {
     _input,
     (condition: {fact: RuleConditionFact; value: string | boolean}) => {
       if (condition.fact === RuleConditionFact.FamilyStatus) {
-        console.log("condition", condition);
         if (
           condition.value !== String(FamilyStatusEnum.NEW) &&
           condition.value !== String(FamilyStatusEnum.RETURNING)

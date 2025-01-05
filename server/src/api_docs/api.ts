@@ -347,23 +347,30 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
     /**
-     * No description
+     * @description Create version 0 of your first rule
      *
      * @tags Rule
      * @name RuleControllerCreateRule
+     * @summary Create a new rule
      * @request POST:/api/rules
      */
     ruleControllerCreateRule: (data: CreateRuleDto, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<
+        {
+          id?: string
+        },
+        any
+      >({
         path: `/api/rules`,
         method: 'POST',
         body: data,
         type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
 
     /**
-     * @description test
+     * @description An array of rules with the latest version
      *
      * @tags Rule
      * @name RuleControllerFindAll
@@ -379,18 +386,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description Will create a new ruleVersion
      *
      * @tags Rule
      * @name RuleControllerUpdateRule
+     * @summary Update a rule by id
      * @request PUT:/api/rules/{id}
      */
     ruleControllerUpdateRule: (id: string, data: CreateRuleDto, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<
+        {
+          id?: string
+        },
+        any
+      >({
         path: `/api/rules/${id}`,
         method: 'PUT',
         body: data,
         type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
 
@@ -402,9 +416,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/rules/{id}
      */
     ruleControllerFindOne: (id: string, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<RuleDto, any>({
         path: `/api/rules/${id}`,
         method: 'GET',
+        format: 'json',
         ...params,
       }),
 
@@ -416,9 +431,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/rules/{id}
      */
     ruleControllerSoftDelete: (id: string, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<
+        {
+          id?: string
+        },
+        any
+      >({
         path: `/api/rules/${id}`,
         method: 'DELETE',
+        format: 'json',
         ...params,
       }),
 

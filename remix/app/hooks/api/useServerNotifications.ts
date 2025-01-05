@@ -16,12 +16,11 @@ export function useServerNotifications(
   const [status, setStatus] = useState<
     "connecting" | "connected" | "disconnected"
   >("connecting");
-  const NOTIFICATION_DURATION = 5000;
+  const NOTIFICATION_DURATION = 6000;
   const validator = useRevalidator();
 
   useEffect(() => {
     const eventSource = new EventSource(endpoint);
-    console.log("EVENT SOURCE", eventSource);
 
     eventSource.onopen = () => {
       setStatus("connected");

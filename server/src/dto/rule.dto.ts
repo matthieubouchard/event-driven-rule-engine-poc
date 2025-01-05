@@ -15,7 +15,6 @@ import { RuleVersionDto } from './rule-version.dto'
 import { Action } from './rule-action.dto'
 import {
   RuleConditionDto,
-  RuleConditionFact,
   FamilyStatusCondition,
   BusinessOwnerCondition,
   Filed2021Condition,
@@ -78,15 +77,13 @@ export class CreateRuleDto {
   @ArrayMinSize(1, { message: 'At least one condition is required' })
   @ValidateNested({ each: true })
   @Type(() => Object, {
+    keepDiscriminatorProperty: true,
     discriminator: {
       property: 'fact',
       subTypes: [
-        { value: FamilyStatusCondition, name: RuleConditionFact.FAMILY_STATUS },
-        {
-          value: BusinessOwnerCondition,
-          name: RuleConditionFact.IS_BUSINESS_OWNER,
-        },
-        { value: Filed2021Condition, name: RuleConditionFact.FILED_2021 },
+        { value: FamilyStatusCondition, name: 'familyStatus' },
+        { value: BusinessOwnerCondition, name: 'isBusinessOwner' },
+        { value: Filed2021Condition, name: 'filedUsTaxes2021' },
       ],
     },
   })

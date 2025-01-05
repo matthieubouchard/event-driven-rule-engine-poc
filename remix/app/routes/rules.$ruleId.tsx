@@ -3,7 +3,7 @@ import {redirect, useLoaderData, useNavigation} from "@remix-run/react";
 import {apiClient} from "../apiClient";
 import {transformAndValidateFormData} from "../components/forms/Rule/helper";
 import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
-import {CreateRuleDto, RuleConditionFact} from "@server/src/api_docs/api";
+import {CreateRuleDto} from "@server/src/api_docs/api";
 
 export async function loader({params}: LoaderFunctionArgs) {
   const [ruleRes, documentsRes] = await Promise.all([

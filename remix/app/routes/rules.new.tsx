@@ -2,9 +2,9 @@ import {parseWithZod} from "@conform-to/zod";
 import {ActionFunctionArgs, json} from "@remix-run/node";
 import {apiClient} from "../apiClient";
 import RuleForm from "../components/forms/Rule/RuleForm";
-import {formSchema} from "../components/forms/Rule/helper";
+import {transformAndValidateFormData} from "../components/forms/Rule/helper";
 import {redirect} from "@remix-run/react";
-import {RuleConditionFact} from "@server/src/api_docs/api";
+import {CreateRuleDto, RuleConditionFact} from "@server/src/api_docs/api";
 
 export async function loader() {
   const res = await apiClient.documentControllerFindAll();
@@ -19,30 +19,14 @@ export default function CreateRule() {
 
 export async function action({request}: ActionFunctionArgs) {
   const formData = await request.formData();
-
-  const submission = parseWithZod(formData, {
-    schema: formSchema,
-  });
-  console.log("submission", submission);
+  const submission = transformAndValidateFormData(formData);
 
   if (submission.status !== "success") {
     return json(submission.reply());
   }
-  if (submission.payload) {
-    // Transform the conditions after validation
-    submission.payload.conditions = submission.payload.conditions.map(
-      (condition) => {
-        if (condition.fact === RuleConditionFact.FamilyStatus) {
-          return condition;
-        }
-        return {
-          ...condition,
-          value: condition.value === "true",
-        };
-      }
-    );
-  }
-  const res = await apiClient.ruleControllerCreateRule(submission.payload);
-  console.log("RESPONSE FROM SAVE!!!", res);
+
+  await apiClient.ruleControllerCreateRule(
+    submission.payload as unknown as CreateRuleDto
+  );
   return redirect("/rules");
 }
