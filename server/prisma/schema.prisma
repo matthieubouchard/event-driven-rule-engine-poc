@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin", "linux-musl", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -7,10 +8,149 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
+// Enums
+enum ApplicationStatus {
+  APPROVED
+  DRAFT
+  IN_REVIEW
+  REJECTED
+  SUBMITTED
+}
+
+enum DocumentStatus {
+  APPROVED
+  PENDING
+  REJECTED
+  REQUESTED
+  SUBMITTED
+}
+
+enum FamilyStatus {
+  NEW
+  RETURNING
+}
+
+enum RuleActionType {
+  DOCUMENT_REQUEST
+}
+
+enum RuleType {
+  APPLICATION
+  NOTIFICATION
+  PAYMENT
+}
+
+// Models
+model Application {
+  id               String            @id @default(uuid())
+  createdAt        DateTime          @default(now())
+  documentRequests DocumentRequest[]
+  familyStatus     FamilyStatus
+  filedUsTaxes2021 Boolean           @default(false)
+  isBusinessOwner  Boolean           @default(false)
+  ruleAudits       RuleAudit[]
+  school           School            @relation(fields: [schoolId], references: [id])
+  schoolId         String
+  status           ApplicationStatus @default(DRAFT)
+  student          Student           @relation(fields: [studentId], references: [id])
+  studentId        String
+  updatedAt        DateTime          @updatedAt
+}
+
+model Document {
+  id        String            @id @default(uuid())
+  createdAt DateTime          @default(now())
+  name      String            @unique
+  requests  DocumentRequest[]
+  updatedAt DateTime          @updatedAt
+  url       String?
+}
+
+model DocumentRequest {
+  id            String         @id @default(uuid())
+  application   Application    @relation(fields: [applicationId], references: [id])
+  applicationId String
+  document      Document       @relation(fields: [documentId], references: [id])
+  documentId    String
+  requestedAt   DateTime       @default(now())
+  status        DocumentStatus @default(PENDING)
+  submittedAt   DateTime?
+  updatedAt     DateTime?      @updatedAt
+
+  @@unique([applicationId, documentId])
+}
+
+model Family {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  parentA   Parent    @relation("ParentA", fields: [parentAId], references: [id])
+  parentAId String    @unique
+  parentB   Parent?   @relation("ParentB", fields: [parentBId], references: [id])
+  parentBId String?   @unique
+  students  Student[]
+  updatedAt DateTime  @updatedAt
+}
+
+model Parent {
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
+  email     String
+  familyA   Family?  @relation("ParentA")
+  familyB   Family?  @relation("ParentB")
+  firstName String
+  lastName  String
   updatedAt DateTime @updatedAt
+}
+
+model Rule {
+  id        String        @id @default(uuid())
+  active    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  versions  RuleVersion[]
+}
+
+model RuleAudit {
+  id            String      @id @default(uuid())
+  application   Application @relation(fields: [applicationId], references: [id])
+  applicationId String
+  evaluatedAt   DateTime    @default(now())
+  matched       Boolean
+  ruleVersion   RuleVersion @relation(fields: [ruleVersionId], references: [id])
+  ruleVersionId String
+}
+
+model RuleVersion {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+  description String?
+  name        String
+  rule        Rule        @relation(fields: [ruleId], references: [id])
+  ruleAudits  RuleAudit[]
+  ruleId      String
+  ruleJson    Json // Stored as JSON array of condition objects
+  type        RuleType    @default(APPLICATION)
+  version     Int
+
+  @@unique([ruleId, version])
+}
+
+model School {
+  id           String        @id @default(uuid())
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  name         String
+  updatedAt    DateTime      @updatedAt
+}
+
+model Student {
+  id           String        @id @default(uuid())
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  dob          DateTime
+  family       Family        @relation(fields: [familyId], references: [id])
+  familyId     String
+  firstName    String
+  lastName     String
+  updatedAt    DateTime      @updatedAt
 }

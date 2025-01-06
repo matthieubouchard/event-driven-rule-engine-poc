@@ -6,15 +6,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "yarn workspace remix dev --manual -c \"yarn workspace server start:dev\"",
-    "remix:build": "yarn workspace remix build",
-    "server:dev": "yarn workspace server start:dev"
+    "dev": "yarn workspace client dev --manual -c \"yarn workspace server start:dev:db\"",
+    "remix:build": "yarn workspace client build",
+    "server:dev": "yarn workspace server start:dev",
+    "db:init": "yarn workspace server initialize:db",
+    "db:generate": "yarn workspace server db:generate",
+    "docker:dev": "docker-compose up db kafka app",
+    "docker:build": "docker-compose up --build",
+    "start:all": "yarn run db:generate && yarn run dev"
   },
   "workspaces": [
     "server",
-    "remix"
+    "client"
   ],
   "dependencies": {
-    "json-rule-engine": "^0.0.3"
+    "@nestjs/mapped-types": "*",
+    "@nestjs/microservices": "^10.4.15",
+    "@types/lodash": "^4.17.14",
+    "json-rule-engine": "^0.0.3",
+    "lodash": "^4.17.21",
+    "prisma": "^6.1.0"
   }
 }

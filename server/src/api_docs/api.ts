@@ -9,10 +9,122 @@
  * ---------------------------------------------------------------
  */
 
-export interface LoginDto {
-  email: string
-  password: string
-  remember?: boolean
+export enum RuleConditionFact {
+  FamilyStatus = 'familyStatus',
+  IsBusinessOwner = 'isBusinessOwner',
+  FiledUsTaxes2021 = 'filedUsTaxes2021',
+}
+
+export enum FamilyStatusEnum {
+  NEW = 'NEW',
+  RETURNING = 'RETURNING',
+}
+
+export interface FamilyStatusCondition {
+  fact: RuleConditionFact
+  value: FamilyStatusEnum
+}
+
+export interface BusinessOwnerCondition {
+  fact: RuleConditionFact
+  value: boolean
+}
+
+export interface Filed2021Condition {
+  fact: RuleConditionFact
+  value: boolean
+}
+
+export interface Action {
+  /** @default "DOCUMENT_REQUEST" */
+  type: 'DOCUMENT_REQUEST'
+  value: string
+  description?: string
+}
+
+export interface CreateRuleDto {
+  name: string
+  description: string
+  /** @default "APPLICATION" */
+  type: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
+  conditions: (FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition)[]
+  actions: Action[]
+}
+
+export interface RuleVersionDto {
+  id: string
+  version: number
+  name: string
+  description: string
+  type: 'APPLICATION' | 'PAYMENT' | 'NOTIFICATION'
+  ruleJson?: {
+    conditions: (FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition)[]
+    actions: Action[]
+  }
+}
+
+export interface RuleDto {
+  id: string
+  active?: boolean
+  versions: RuleVersionDto[]
+}
+
+export interface RuleConditionsInput {
+  conditions: any[][]
+}
+
+export interface StudentDto {
+  firstName: string
+  lastName: string
+  /** @format date-time */
+  dob: string
+}
+
+export interface SchoolDto {
+  name: string
+}
+
+export interface RuleVersionName {
+  version: number
+  name: string
+}
+
+export interface RuleAuditDto {
+  ruleVersion: RuleVersionName
+  matched: boolean
+  id: string
+  /** @format date-time */
+  evaluatedAt: string
+}
+
+export interface DocumentDto {
+  name: string
+}
+
+export interface DocumentRequestDto {
+  id: string
+  /** @format date-time */
+  requestedAt: string
+  /** @format date-time */
+  updatedAt: string
+  status: 'PENDING' | 'REQUESTED' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
+  document: DocumentDto
+}
+
+export interface ApplicationResponseDto {
+  familyStatus: 'NEW' | 'RETURNING'
+  id: string
+  isBusinessOwner: boolean
+  filedUsTaxes2021: boolean
+  student: StudentDto
+  school: SchoolDto
+  ruleAudits: RuleAuditDto[]
+  documentRequests: DocumentRequestDto[]
+}
+
+export interface GenericMutationResponse {
+  message: string
+  success: boolean
 }
 
 export type QueryParamsType = Record<string | number, any>
@@ -99,9 +211,7 @@ export class HttpClient<SecurityDataType = unknown> {
   protected toQueryString(rawQuery?: QueryParamsType): string {
     const query = rawQuery || {}
     const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key])
-    return keys
-      .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
-      .join('&')
+    return keys.map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key))).join('&')
   }
 
   protected addQueryParams(rawQuery?: QueryParamsType): string {
@@ -110,19 +220,14 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
-    [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
+    [ContentType.Json]: (input: any) => (input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input),
     [ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
     [ContentType.FormData]: (input: any) =>
       Object.keys(input || {}).reduce((formData, key) => {
         const property = input[key]
         formData.append(
           key,
-          property instanceof Blob
-            ? property
-            : typeof property === 'object' && property !== null
-              ? JSON.stringify(property)
-              : `${property}`,
+          property instanceof Blob ? property : typeof property === 'object' && property !== null ? JSON.stringify(property) : `${property}`,
         )
         return formData
       }, new FormData()),
@@ -177,9 +282,7 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
-        this.securityWorker &&
-        (await this.securityWorker(this.securityData))) ||
+      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && (await this.securityWorker(this.securityData))) ||
       {}
     const requestParams = this.mergeRequestParams(params, secureParams)
     const queryString = query && this.toQueryString(query)
@@ -235,21 +338,77 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
     /**
-     * No description
+     * @description Create version 0 of your first rule
      *
-     * @tags app
-     * @name AppControllerGetHello
-     * @summary Get hello message
-     * @request GET:/api/hello
+     * @tags Rule
+     * @name RuleControllerCreateRule
+     * @summary Create a new rule
+     * @request POST:/api/rules
      */
-    appControllerGetHello: (params: RequestParams = {}) =>
+    ruleControllerCreateRule: (data: CreateRuleDto, params: RequestParams = {}) =>
       this.request<
         {
-          message?: string
+          id?: string
         },
         any
       >({
-        path: `/api/hello`,
+        path: `/api/rules`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description An array of rules with the latest version
+     *
+     * @tags Rule
+     * @name RuleControllerFindAll
+     * @summary Get all rules
+     * @request GET:/api/rules
+     */
+    ruleControllerFindAll: (params: RequestParams = {}) =>
+      this.request<RuleDto[], any>({
+        path: `/api/rules`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Will create a new ruleVersion
+     *
+     * @tags Rule
+     * @name RuleControllerUpdateRule
+     * @summary Update a rule by id
+     * @request PUT:/api/rules/{id}
+     */
+    ruleControllerUpdateRule: (id: string, data: CreateRuleDto, params: RequestParams = {}) =>
+      this.request<
+        {
+          id?: string
+        },
+        any
+      >({
+        path: `/api/rules/${id}`,
+        method: 'PUT',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Rule
+     * @name RuleControllerFindOne
+     * @request GET:/api/rules/{id}
+     */
+    ruleControllerFindOne: (id: string, params: RequestParams = {}) =>
+      this.request<RuleDto, any>({
+        path: `/api/rules/${id}`,
         method: 'GET',
         format: 'json',
         ...params,
@@ -258,14 +417,56 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags app
-     * @name AppControllerGetUsers
-     * @summary Get users
-     * @request GET:/api/users
+     * @tags Rule
+     * @name RuleControllerSoftDelete
+     * @request DELETE:/api/rules/{id}
      */
-    appControllerGetUsers: (params: RequestParams = {}) =>
+    ruleControllerSoftDelete: (id: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id?: string
+        },
+        any
+      >({
+        path: `/api/rules/${id}`,
+        method: 'DELETE',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags RuleEvaluation
+     * @name RuleEvaluationControllerGetMatchingApplicationsCount
+     * @summary Get count of applications matching rule conditions
+     * @request POST:/api/preview-count
+     */
+    ruleEvaluationControllerGetMatchingApplicationsCount: (data: RuleConditionsInput, params: RequestParams = {}) =>
+      this.request<
+        {
+          count?: number
+        },
+        any
+      >({
+        path: `/api/preview-count`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document
+     * @name DocumentControllerFindAll
+     * @request GET:/api/document
+     */
+    documentControllerFindAll: (params: RequestParams = {}) =>
       this.request<void, any>({
-        path: `/api/users`,
+        path: `/api/document`,
         method: 'GET',
         ...params,
       }),
@@ -273,16 +474,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags app
-     * @name AppControllerLogin
-     * @request POST:/api/login
+     * @tags Notification
+     * @name NotificationControllerConnect
+     * @request GET:/api/notification/sse
      */
-    appControllerLogin: (data: LoginDto, params: RequestParams = {}) =>
+    notificationControllerConnect: (params: RequestParams = {}) =>
       this.request<void, any>({
-        path: `/api/login`,
+        path: `/api/notification/sse`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Application
+     * @name ApplicationControllerFindAll
+     * @summary Get all applications with rule audit logs and document requests
+     * @request GET:/api/application
+     */
+    applicationControllerFindAll: (params: RequestParams = {}) =>
+      this.request<any, ApplicationResponseDto[]>({
+        path: `/api/application`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Application
+     * @name ApplicationControllerProcessApplication
+     * @summary Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable
+     * @request POST:/api/application/process/{id}
+     */
+    applicationControllerProcessApplication: (id: string, params: RequestParams = {}) =>
+      this.request<any, GenericMutationResponse>({
+        path: `/api/application/process/${id}`,
         method: 'POST',
-        body: data,
-        type: ContentType.Json,
         ...params,
       }),
   }

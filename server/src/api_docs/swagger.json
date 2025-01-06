@@ -1,19 +1,30 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/hello": {
-      "get": {
-        "operationId": "AppController_getHello",
+    "/api/rules": {
+      "post": {
+        "description": "Create version 0 of your first rule",
+        "operationId": "RuleController_createRule",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Returns hello message",
+            "description": "New rule id",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "id": {
                       "type": "string"
                     }
                   }
@@ -22,48 +33,262 @@
             }
           }
         },
-        "summary": "Get hello message",
+        "summary": "Create a new rule",
         "tags": [
-          "app"
+          "Rule"
         ]
-      }
-    },
-    "/api/users": {
+      },
       "get": {
-        "operationId": "AppController_getUsers",
+        "description": "An array of rules with the latest version",
+        "operationId": "RuleController_findAll",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Rules found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RuleDto"
+                  }
+                }
+              }
+            }
           }
         },
-        "summary": "Get users",
+        "summary": "Get all rules",
         "tags": [
-          "app"
+          "Rule"
         ]
       }
     },
-    "/api/login": {
+    "/api/rules/{id}": {
+      "put": {
+        "description": "Will create a new ruleVersion",
+        "operationId": "RuleController_updateRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated rule id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a rule by id",
+        "tags": [
+          "Rule"
+        ]
+      },
+      "get": {
+        "operationId": "RuleController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rule by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      },
+      "delete": {
+        "operationId": "RuleController_softDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deactivate a rule by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Rule"
+        ]
+      }
+    },
+    "/api/preview-count": {
       "post": {
-        "operationId": "AppController_login",
+        "operationId": "RuleEvaluationController_getMatchingApplicationsCount",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginDto"
+                "$ref": "#/components/schemas/RuleConditionsInput"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get count of applications matching rule conditions",
+        "tags": [
+          "RuleEvaluation"
+        ]
+      }
+    },
+    "/api/document": {
+      "get": {
+        "operationId": "DocumentController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
             "description": ""
           }
         },
         "tags": [
-          "app"
+          "Document"
+        ]
+      }
+    },
+    "/api/notification/sse": {
+      "get": {
+        "operationId": "NotificationController_connect",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/application": {
+      "get": {
+        "operationId": "ApplicationController_findAll",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all applications with rule audit logs and document requests",
+        "tags": [
+          "Application"
+        ]
+      }
+    },
+    "/api/application/process/{id}": {
+      "post": {
+        "operationId": "ApplicationController_processApplication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericMutationResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable",
+        "tags": [
+          "Application"
         ]
       }
     }
@@ -90,22 +315,433 @@
       }
     },
     "schemas": {
-      "LoginDto": {
+      "RuleConditionFact": {
+        "type": "string",
+        "enum": [
+          "familyStatus",
+          "isBusinessOwner",
+          "filedUsTaxes2021"
+        ]
+      },
+      "FamilyStatusEnum": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "RETURNING"
+        ]
+      },
+      "FamilyStatusCondition": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string"
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RuleConditionFact"
+              }
+            ]
           },
-          "password": {
-            "type": "string"
+          "value": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyStatusEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "fact",
+          "value"
+        ]
+      },
+      "BusinessOwnerCondition": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RuleConditionFact"
+              }
+            ]
           },
-          "remember": {
+          "value": {
             "type": "boolean"
           }
         },
         "required": [
-          "email",
-          "password"
+          "fact",
+          "value"
+        ]
+      },
+      "Filed2021Condition": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RuleConditionFact"
+              }
+            ]
+          },
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fact",
+          "value"
+        ]
+      },
+      "Action": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "DOCUMENT_REQUEST"
+            ],
+            "default": "DOCUMENT_REQUEST"
+          },
+          "value": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ]
+      },
+      "CreateRuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "APPLICATION",
+              "NOTIFICATION",
+              "PAYMENT"
+            ],
+            "default": "APPLICATION"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/FamilyStatusCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/BusinessOwnerCondition"
+                },
+                {
+                  "$ref": "#/components/schemas/Filed2021Condition"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "fact"
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "type",
+          "conditions",
+          "actions"
+        ]
+      },
+      "RuleVersionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "APPLICATION",
+              "NOTIFICATION",
+              "PAYMENT"
+            ]
+          },
+          "ruleJson": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FamilyStatusCondition"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BusinessOwnerCondition"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Filed2021Condition"
+                    }
+                  ]
+                }
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Action"
+                }
+              }
+            },
+            "required": [
+              "conditions",
+              "actions"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "name",
+          "description",
+          "type"
+        ]
+      },
+      "RuleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleVersionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "versions"
+        ]
+      },
+      "RuleConditionsInput": {
+        "type": "object",
+        "properties": {
+          "conditions": {
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "conditions"
+        ]
+      },
+      "StudentDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dob": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "dob"
+        ]
+      },
+      "SchoolDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "RuleVersionName": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "name"
+        ]
+      },
+      "RuleAuditDto": {
+        "type": "object",
+        "properties": {
+          "ruleVersion": {
+            "$ref": "#/components/schemas/RuleVersionName"
+          },
+          "matched": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "evaluatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ruleVersion",
+          "matched",
+          "id",
+          "evaluatedAt"
+        ]
+      },
+      "DocumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "DocumentRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "PENDING",
+              "REJECTED",
+              "REQUESTED",
+              "SUBMITTED"
+            ]
+          },
+          "document": {
+            "$ref": "#/components/schemas/DocumentDto"
+          }
+        },
+        "required": [
+          "id",
+          "requestedAt",
+          "updatedAt",
+          "status",
+          "document"
+        ]
+      },
+      "ApplicationResponseDto": {
+        "type": "object",
+        "properties": {
+          "familyStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "RETURNING"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "isBusinessOwner": {
+            "type": "boolean"
+          },
+          "filedUsTaxes2021": {
+            "type": "boolean"
+          },
+          "student": {
+            "$ref": "#/components/schemas/StudentDto"
+          },
+          "school": {
+            "$ref": "#/components/schemas/SchoolDto"
+          },
+          "ruleAudits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleAuditDto"
+            }
+          },
+          "documentRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentRequestDto"
+            }
+          }
+        },
+        "required": [
+          "familyStatus",
+          "id",
+          "isBusinessOwner",
+          "filedUsTaxes2021",
+          "student",
+          "school",
+          "ruleAudits",
+          "documentRequests"
+        ]
+      },
+      "GenericMutationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message",
+          "success"
         ]
       }
     }
