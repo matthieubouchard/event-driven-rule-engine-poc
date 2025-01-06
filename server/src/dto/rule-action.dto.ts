@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsEnum, IsOptional } from 'class-validator'
+
 import { RuleActionType } from '@prisma/client'
 import { Transform } from 'class-transformer'
+import { IsString, IsEnum, IsOptional } from 'class-validator'
 
 export class Action {
   @ApiProperty({

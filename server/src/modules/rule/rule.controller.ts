@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
-import { RuleService } from './rule.service'
-import { CreateRuleDto, RuleDto } from '../../dto'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+
+import { CreateRuleDto, RuleDto } from '../../dto'
+
+import { RuleService } from './rule.service'
 
 @Controller('rules')
 export class RuleController {

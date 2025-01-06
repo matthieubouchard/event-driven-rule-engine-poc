@@ -1,10 +1,12 @@
 import { Controller, Get, Logger } from '@nestjs/common'
-import { DocumentService } from './document.service'
 import { EventPattern } from '@nestjs/microservices'
+
+import { RuleActionType } from '@prisma/client'
+import { map } from 'lodash'
 import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
 import { PubSubService } from 'src/modules/pubsub/pubsub.service'
-import { map } from 'lodash'
-import { RuleActionType } from '@prisma/client'
+
+import { DocumentService } from './document.service'
 
 @Controller('document')
 export class DocumentController {

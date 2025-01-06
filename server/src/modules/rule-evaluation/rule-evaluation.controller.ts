@@ -1,11 +1,14 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common'
 import { EventPattern, Payload } from '@nestjs/microservices'
-import { PubSubService } from 'src/modules/pubsub/pubsub.service'
-import { map } from 'lodash'
-import { RuleEvaluationService } from './rule-evaluation.service'
-import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
+
+import { map } from 'lodash'
 import { RuleConditionDto, RuleConditionsInput } from 'src/dto'
+import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
+import { PubSubService } from 'src/modules/pubsub/pubsub.service'
+
+import { RuleEvaluationService } from './rule-evaluation.service'
+
 
 @Controller()
 export class RuleEvaluationController {

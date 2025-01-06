@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common'
-import { DocumentService } from './document.service'
-import { DocumentController } from './document.controller'
+
 import { PubSubModule } from 'src/modules/pubsub/pubsub.module'
+
+import { DocumentController } from './document.controller'
+import { DocumentService } from './document.service'
 
 @Module({
   imports: [PubSubModule],

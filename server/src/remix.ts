@@ -1,6 +1,7 @@
-import * as path from 'path'
 import * as fs from 'fs'
+import * as path from 'path'
 import * as url from 'url'
+
 import { RequestHandler, createRequestHandler } from '@remix-run/express'
 import { broadcastDevReady, installGlobals } from '@remix-run/node'
 import * as sourceMapSupport from 'source-map-support'

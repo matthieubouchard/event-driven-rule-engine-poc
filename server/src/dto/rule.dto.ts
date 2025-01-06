@@ -1,4 +1,7 @@
 import { ApiProperty, ApiExtraModels } from '@nestjs/swagger'
+
+import { RuleType } from '@prisma/client'
+import { Type } from 'class-transformer'
 import {
   IsString,
   IsEnum,
@@ -8,10 +11,7 @@ import {
   MinLength,
   IsOptional,
 } from 'class-validator'
-import { Type } from 'class-transformer'
-import { RuleType } from '@prisma/client'
 
-import { RuleVersionDto } from './rule-version.dto'
 import { Action } from './rule-action.dto'
 import {
   RuleConditionDto,
@@ -19,6 +19,7 @@ import {
   BusinessOwnerCondition,
   Filed2021Condition,
 } from './rule-condition.dto'
+import { RuleVersionDto } from './rule-version.dto'
 
 @ApiExtraModels(
   FamilyStatusCondition,

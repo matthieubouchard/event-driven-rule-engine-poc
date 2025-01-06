@@ -1,4 +1,5 @@
 import { ClientProviderOptions, Transport } from '@nestjs/microservices'
+
 import { Partitioners } from 'kafkajs'
 
 export const KAFKA_CLIENT = 'KAFKA_CLIENT'

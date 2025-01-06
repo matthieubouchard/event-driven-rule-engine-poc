@@ -1,7 +1,9 @@
 import { Controller, Get, Param, Post } from '@nestjs/common'
-import { ApplicationService } from './application.service'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+
 import { ApplicationResponseDto, GenericMutationResponse } from '../../dto'
+
+import { ApplicationService } from './application.service'
 
 @Controller('application')
 export class ApplicationController {

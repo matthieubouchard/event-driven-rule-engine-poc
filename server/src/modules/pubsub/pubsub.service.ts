@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { ClientKafka } from '@nestjs/microservices'
+
 import { KAFKA_CLIENT } from './config'
 
 interface PubSubMessage<T = any> {

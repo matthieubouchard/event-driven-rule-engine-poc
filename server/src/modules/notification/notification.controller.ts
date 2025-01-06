@@ -1,5 +1,6 @@
 import { Controller, Get, Logger, Request, Res } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
+
 import { Subject } from 'rxjs'
 import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
 

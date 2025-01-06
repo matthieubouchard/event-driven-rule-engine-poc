@@ -1,7 +1,8 @@
 import { Global, Module } from '@nestjs/common'
 import { ClientsModule } from '@nestjs/microservices'
-import { PubSubService } from './pubsub.service'
+
 import { mainClientConfig } from './config'
+import { PubSubService } from './pubsub.service'
 
 @Global()
 @Module({

@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common'
-import { CreateRuleDto } from '../../dto'
-import { DbService } from 'src/modules/db/db.service'
-import { InputJsonValue } from '@prisma/client/runtime/library'
+
 import { RuleType } from '@prisma/client'
+import { InputJsonValue } from '@prisma/client/runtime/library'
+import { DbService } from 'src/modules/db/db.service'
+
+import { CreateRuleDto } from '../../dto'
+
 
 @Injectable()
 export class RuleService {

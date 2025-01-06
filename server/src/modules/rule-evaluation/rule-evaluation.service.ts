@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Engine } from 'json-rules-engine'
-import { DbService } from 'src/modules/db/db.service'
-import { map, get } from 'lodash'
+
 import { Application, RuleType } from '@prisma/client'
+import { Engine } from 'json-rules-engine'
+import { map, get } from 'lodash'
 import {
   BusinessOwnerCondition,
   FamilyStatusCondition,
   Filed2021Condition,
   RuleConditionFact,
 } from 'src/dto'
+import { DbService } from 'src/modules/db/db.service'
 
 @Injectable()
 export class RuleEvaluationService {

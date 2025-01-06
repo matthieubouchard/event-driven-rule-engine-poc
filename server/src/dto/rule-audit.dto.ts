@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+
 import { RuleVersionName } from './rule-version.dto'
 
 export class RuleAuditDto {

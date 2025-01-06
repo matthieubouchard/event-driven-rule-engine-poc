@@ -1,12 +1,14 @@
 import { ApiProperty, ApiExtraModels } from '@nestjs/swagger'
+
 import { RuleType } from '@prisma/client'
+
+import { Action } from './rule-action.dto'
 import {
   RuleConditionDto,
   FamilyStatusCondition,
   BusinessOwnerCondition,
   Filed2021Condition,
 } from './rule-condition.dto'
-import { Action } from './rule-action.dto'
 
 export class RuleVersionName {
   @ApiProperty()

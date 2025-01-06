@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { DbService } from 'src/modules/db/db.service'
-import { PubSubService } from 'src/modules/pubsub/pubsub.service'
+
 import { TryCatch } from 'decorators'
+import { DbService } from 'src/modules/db/db.service'
 import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
+import { PubSubService } from 'src/modules/pubsub/pubsub.service'
 
 @Injectable()
 export class ApplicationService {

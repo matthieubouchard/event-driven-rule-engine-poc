@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+
 import { DocumentStatus } from '@prisma/client'
 
 export class DocumentDto {

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiExtraModels, getSchemaPath } from '@nestjs/swagger'
-import { IsEnum, IsBoolean } from 'class-validator'
+
 import { Transform } from 'class-transformer'
+import { IsEnum, IsBoolean } from 'class-validator'
 
 export enum RuleConditionFact {
   FAMILY_STATUS = 'familyStatus',
