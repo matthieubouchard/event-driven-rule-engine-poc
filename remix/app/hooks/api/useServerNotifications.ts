@@ -1,21 +1,17 @@
-import {useRevalidator} from "@remix-run/react";
-import {useState, useEffect} from "react";
+import { useRevalidator } from '@remix-run/react';
+import { useState, useEffect } from 'react';
 
 type Notification = {
-  type: "RULE_EVALUATED" | "DOCUMENT_REQUESTED" | "APPLICATION_SUBMITTED";
+  type: 'RULE_EVALUATED' | 'DOCUMENT_REQUESTED' | 'APPLICATION_SUBMITTED';
   payload: any;
   timestamp: string;
   id: string;
   isVisible: boolean;
 };
 
-export function useServerNotifications(
-  endpoint = "http://localhost:3000/api/notification/sse"
-) {
+export function useServerNotifications(endpoint = 'http://localhost:3000/api/notification/sse') {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [status, setStatus] = useState<
-    "connecting" | "connected" | "disconnected"
-  >("connecting");
+  const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const NOTIFICATION_DURATION = 6000;
   const validator = useRevalidator();
 
@@ -23,7 +19,7 @@ export function useServerNotifications(
     const eventSource = new EventSource(endpoint);
 
     eventSource.onopen = () => {
-      setStatus("connected");
+      setStatus('connected');
     };
 
     eventSource.onmessage = (event) => {
@@ -39,33 +35,25 @@ export function useServerNotifications(
 
       // Schedule fade out
       setTimeout(() => {
-        setNotifications((prev) =>
-          prev.map((notif) =>
-            notif.id === newNotification.id
-              ? {...notif, isVisible: false}
-              : notif
-          )
-        );
+        setNotifications((prev) => prev.map((notif) => (notif.id === newNotification.id ? { ...notif, isVisible: false } : notif)));
 
         // Remove after fade animation
         setTimeout(() => {
-          setNotifications((prev) =>
-            prev.filter((notif) => notif.id !== newNotification.id)
-          );
+          setNotifications((prev) => prev.filter((notif) => notif.id !== newNotification.id));
         }, 500); // matches fade duration
       }, NOTIFICATION_DURATION);
     };
 
     eventSource.onerror = () => {
-      setStatus("disconnected");
+      setStatus('disconnected');
       eventSource.close();
     };
 
     return () => {
       eventSource.close();
-      setStatus("disconnected");
+      setStatus('disconnected');
     };
-  }, [endpoint]);
+  }, [endpoint, validator]);
 
-  return {notifications, status};
+  return { notifications, status };
 }

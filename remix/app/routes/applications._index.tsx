@@ -1,27 +1,26 @@
-import {useLoaderData, Form} from "@remix-run/react";
-import {ActionFunctionArgs, json} from "@remix-run/node";
-import {apiClient} from "../apiClient";
-import {ApplicationResponseDto} from "@server/src/api_docs/api";
-import RuleAuditLogTable from "../components/RuleAuditLogTable";
-import DocumentRequestsTable from "../components/DocumentRequestTable";
+import { ActionFunctionArgs, json } from '@remix-run/node';
+import { useLoaderData, Form } from '@remix-run/react';
+import { ApplicationResponseDto } from '@server/src/api_docs/api';
+
+import { apiClient } from '../apiClient';
+import DocumentRequestsTable from '../components/DocumentRequestTable';
+import RuleAuditLogTable from '../components/RuleAuditLogTable';
 
 export async function loader(): Promise<ApplicationResponseDto[]> {
   const rules = await apiClient.applicationControllerFindAll();
   if (!rules) {
-    throw new Response("Failed to load rules", {status: 404});
+    throw new Response('Failed to load rules', { status: 404 });
   }
   return await rules.json();
 }
 
-export async function action({request}: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const applicationId = formData.get("applicationId");
-  const res = await apiClient.applicationControllerProcessApplication(
-    applicationId as unknown as string
-  );
+  const applicationId = formData.get('applicationId');
+  const res = await apiClient.applicationControllerProcessApplication(applicationId as unknown as string);
 
   if (!res.ok) {
-    throw new Response("Failed to process application", {
+    throw new Response('Failed to process application', {
       status: 500,
     });
   }
@@ -36,7 +35,7 @@ export default function Applications() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold" style={{color: "white"}}>
+        <h1 className="text-3xl font-bold" style={{ color: 'white' }}>
           Applications
         </h1>
       </div>
@@ -46,56 +45,25 @@ export default function Applications() {
             <div className="card-body">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="card-title text-lg font-semibold text-gray-800">
-                    {application.school.name}
-                  </h2>
+                  <h2 className="card-title text-lg font-semibold text-gray-800">{application.school.name}</h2>
                   <h3 className="text-md font-semibold text-gray-600">
-                    {application.student.firstName}{" "}
-                    {application.student.lastName} DOB:{" "}
-                    {
-                      new Date(application.student.dob)
-                        .toLocaleDateString()
-                        .split(",")[0]
-                    }
+                    {application.student.firstName} {application.student.lastName} DOB:{' '}
+                    {new Date(application.student.dob).toLocaleDateString().split(',')[0]}
                   </h3>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {/* Family Status Badge */}
-                    <span
-                      className={`badge ${
-                        application.familyStatus === "NEW"
-                          ? "badge-primary"
-                          : "badge-secondary"
-                      }`}
-                    >
-                      {application.familyStatus === "NEW"
-                        ? "New Family"
-                        : "Returning Family"}
+                    <span className={`badge ${application.familyStatus === 'NEW' ? 'badge-primary' : 'badge-secondary'}`}>
+                      {application.familyStatus === 'NEW' ? 'New Family' : 'Returning Family'}
                     </span>
 
                     {/* Business Owner Badge */}
-                    <span
-                      className={`badge ${
-                        application.isBusinessOwner
-                          ? "badge-info"
-                          : "badge-outline"
-                      }`}
-                    >
-                      {application.isBusinessOwner
-                        ? "Business Owner"
-                        : "Not Business Owner"}
+                    <span className={`badge ${application.isBusinessOwner ? 'badge-info' : 'badge-outline'}`}>
+                      {application.isBusinessOwner ? 'Business Owner' : 'Not Business Owner'}
                     </span>
 
                     {/* 2021 Taxes Badge */}
-                    <span
-                      className={`badge ${
-                        !application.filedUsTaxes2021
-                          ? "badge-warning"
-                          : "badge-success"
-                      }`}
-                    >
-                      {application.filedUsTaxes2021
-                        ? "Filed 2021 Taxes"
-                        : "No 2021 Taxes"}
+                    <span className={`badge ${!application.filedUsTaxes2021 ? 'badge-warning' : 'badge-success'}`}>
+                      {application.filedUsTaxes2021 ? 'Filed 2021 Taxes' : 'No 2021 Taxes'}
                     </span>
                   </div>
                 </div>
@@ -104,11 +72,7 @@ export default function Applications() {
               <RuleAuditLogTable auditLog={application.ruleAudits} />
               <div className="card-actions justify-end mt-4">
                 <Form method="post">
-                  <input
-                    type="hidden"
-                    name="applicationId"
-                    value={application.id}
-                  />
+                  <input type="hidden" name="applicationId" value={application.id} />
                   <button
                     type="submit"
                     className="btn bg-purple-600 hover:bg-purple-700 text-white border-none px-6 py-2 rounded-lg shadow-md transition-colors"

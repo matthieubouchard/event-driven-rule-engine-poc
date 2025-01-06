@@ -1,20 +1,13 @@
-import {ApplicationResponseDto} from "@server/src/api_docs/api";
-import {ChevronDown, ChevronRight} from "lucide-react";
-import {useState} from "react";
+import { ApplicationResponseDto } from '@server/src/api_docs/api';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
-function DocumentRequestsTable({
-  requests,
-}: {
-  requests: ApplicationResponseDto["documentRequests"];
-}) {
+function DocumentRequestsTable({ requests }: { requests: ApplicationResponseDto['documentRequests'] }) {
   const [open, setOpen] = useState(false);
 
   return (
     <div className="mt-4">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 mb-2"
-      >
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 mb-2">
         Document Requests
         {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
       </button>
@@ -37,13 +30,13 @@ function DocumentRequestsTable({
                   <td>
                     <span
                       className={`badge ${
-                        request.status === "PENDING"
-                          ? "badge-warning"
-                          : request.status === "SUBMITTED"
-                            ? "badge-success"
-                            : request.status === "REJECTED"
-                              ? "badge-error"
-                              : "badge-info"
+                        request.status === 'PENDING'
+                          ? 'badge-warning'
+                          : request.status === 'SUBMITTED'
+                            ? 'badge-success'
+                            : request.status === 'REJECTED'
+                              ? 'badge-error'
+                              : 'badge-info'
                       }`}
                     >
                       {request.status}

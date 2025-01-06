@@ -1,38 +1,32 @@
-import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
-import {redirect, useLoaderData, useNavigation} from "@remix-run/react";
-import {apiClient} from "../apiClient";
-import {transformAndValidateFormData} from "../components/forms/Rule/helper";
-import RuleForm, {RuleFormProps} from "../components/forms/Rule/RuleForm";
-import {CreateRuleDto} from "@server/src/api_docs/api";
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
+import { redirect, useLoaderData, useNavigation } from '@remix-run/react';
+import { CreateRuleDto } from '@server/src/api_docs/api';
 
-export async function loader({params}: LoaderFunctionArgs) {
-  const [ruleRes, documentsRes] = await Promise.all([
-    apiClient.ruleControllerFindOne(params.ruleId!),
-    apiClient.documentControllerFindAll(),
-  ]);
+import { apiClient } from '../apiClient';
+import RuleForm, { RuleFormProps } from '../components/forms/Rule/RuleForm';
+import { transformAndValidateFormData } from '../components/forms/Rule/helper';
 
-  if (!ruleRes.ok) throw new Response("Rule not found", {status: 404});
-  if (!documentsRes.ok)
-    throw new Response("Documents not found", {status: 404});
+export async function loader({ params }: LoaderFunctionArgs) {
+  const [ruleRes, documentsRes] = await Promise.all([apiClient.ruleControllerFindOne(params.ruleId!), apiClient.documentControllerFindAll()]);
 
-  const [rule, documents] = await Promise.all([
-    ruleRes.json(),
-    documentsRes.json(),
-  ]);
+  if (!ruleRes.ok) throw new Response('Rule not found', { status: 404 });
+  if (!documentsRes.ok) throw new Response('Documents not found', { status: 404 });
 
-  return json({rule, documents});
+  const [rule, documents] = await Promise.all([ruleRes.json(), documentsRes.json()]);
+
+  return json({ rule, documents });
 }
 
 export default function EditRule() {
-  const {rule} = useLoaderData<typeof loader>();
+  const { rule } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   // Show loading state during navigation
-  if (navigation.state === "loading") {
+  if (navigation.state === 'loading') {
     return <div>Loading...</div>;
   }
   const latestVersion = rule.versions[0];
-  const initialData: RuleFormProps["initialData"] = {
+  const initialData: RuleFormProps['initialData'] = {
     name: latestVersion.name,
     description: latestVersion.description,
     conditions: latestVersion.ruleJson.conditions,
@@ -42,17 +36,14 @@ export default function EditRule() {
   return <RuleForm key={rule.id} initialData={initialData} method="put" />;
 }
 
-export async function action({request, params}: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const submission = transformAndValidateFormData(formData);
 
-  if (submission.status !== "success") {
+  if (submission.status !== 'success') {
     return json(submission.reply());
   }
 
-  await apiClient.ruleControllerUpdateRule(
-    params.ruleId as string,
-    submission.payload as unknown as CreateRuleDto
-  );
-  return redirect("/rules");
+  await apiClient.ruleControllerUpdateRule(params.ruleId as string, submission.payload as unknown as CreateRuleDto);
+  return redirect('/rules');
 }
