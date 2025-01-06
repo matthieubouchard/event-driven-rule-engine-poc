@@ -2,7 +2,7 @@
 
 My approach to this project was to consider how to build a rule engine that allows for flexibility and scalability. I chose to use node-rules-json as a package for evaluating rules with a basic schema of `conditions` and `actions`. I considered that there may be different type of rules or ways of chaining rules that we would want to handle in the future so this POC distinguishes that there may be different types of rules like `RuleType.Application` or `RuleType.Payment`. Depending on the type of rule, the `RuleEvaluationService` can construct and resolve a flexible dictionary of facts to evaluate. The scalabilty comes in that the app uses Kafka and the `@EventPattern` decorator to listen to system events in sequence and in parallel and that each module in the NestJS app could be broken out into a standalone microserivce with relatively low overhead. This results in event-driven application that automates document requests (or any rule decided actions) based on application criteria. The architecture follows a clean separation of concerns between client/server and within server modules themselves but with shared type safety defined in the server.
 
-## Running the app (requires Docker in your environment)
+## Running the app (requires [Docker](https://www.docker.com/products/docker-desktop/) & yarn (`npm install --global yarn`) in your environment)
 1. `yarn run docker:dev`
 2. Visit [localhost:3000](http://localhost:3000)
 3. View API docs at [localhost:3000/api-docs](http://localhost:3000/api-docs)
@@ -57,13 +57,13 @@ Kafka provides an event log that could be used for replay and system recovery
 
 ## Future Considerations
 
-### Testing
+### Testing & Error handling
 - Did not get to this but I generally prefer to get as much coverage as possible with Cypress E2E testing and then follow on with unit tests and isolated api testing
+- With nest, I generally like to implement catch all error filter and also implemented a @TryCatch decorator which logs and optionally re-throws but a I would be more granular given the time
 
 ### Enhanced Rule Engine
 - Support for different rule types beyond document requests
 - More complex rule conditions and combinations
-- Rule version management and history
 
 ### Microservices Evolution
 - Split Rule Evaluation into its own microservice

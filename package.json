@@ -22,9 +22,20 @@
   "dependencies": {
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^10.4.15",
+    "@remix-run/node": "^2.4.1",
     "@types/lodash": "^4.17.14",
     "json-rule-engine": "^0.0.3",
     "lodash": "^4.17.21",
     "prisma": "^6.1.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.3.1"
   }
 }
