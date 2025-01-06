@@ -2,12 +2,13 @@
 
 My approach to this project was to consider how to build a rule engine that allows for flexibility and scalability. I chose to use node-rules-json as a package for evaluating rules with a basic schema of `conditions` and `actions`. I considered that there may be different type of rules or ways of chaining rules that we would want to handle in the future so this POC distinguishes that there may be different types of rules like `RuleType.Application` or `RuleType.Payment`. Depending on the type of rule, the `RuleEvaluationService` can construct and resolve a flexible dictionary of facts to evaluate. The scalabilty comes in that the app uses Kafka and the `@EventPattern` decorator to listen to system events in sequence and in parallel and that each module in the NestJS app could be broken out into a standalone microserivce with relatively low overhead. This results in event-driven application that automates document requests (or any rule decided actions) based on application criteria. The architecture follows a clean separation of concerns between client/server and within server modules themselves but with shared type safety defined in the server.
 
-## Running the app (requires [Docker](https://www.docker.com/products/docker-desktop/) & yarn (`npm install --global yarn`) in your environment)
-1. `yarn run docker:dev`
-2. Visit [localhost:3000](http://localhost:3000)
-3. View API docs at [localhost:3000/api-docs](http://localhost:3000/api-docs)
-4. Frontend available at [`/`](http://localhost:3000), API available at [`/api`](http://localhost:3000/api)
-5. Demo and code walkthru videos:
+## Running the app
+1. Requriments  [Docker](https://www.docker.com/products/docker-desktop/) and yarn: `npm install --global yarn` 
+2. `yarn run docker:dev`
+3. Visit [localhost:3000](http://localhost:3000)
+4. View API docs at [localhost:3000/api-docs](http://localhost:3000/api-docs)
+5. Frontend available at [`/`](http://localhost:3000), API available at [`/api`](http://localhost:3000/api)
+6. Demo and code walkthru videos:
    - [Demo](https://www.loom.com/share/f0b5ef6cd6aa463eb8cab752e992eefe?sid=d9a07a92-847c-4ef9-ba67-45c799d06629)
    - [Code Walkthru Part:1](https://www.loom.com/share/ea1973fc17294aef887d25a09596ff5a?sid=fa3f0983-418e-4fd1-80e5-fff8e9da7fc7)
    - [Code Walkthru Part:2](https://www.loom.com/share/a5253c3e61fb4d14b146dbc164a0fb6a?sid=0e42a32f-78b6-4817-b182-56baefd1627e)
