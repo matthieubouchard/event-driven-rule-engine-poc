@@ -1,9 +1,9 @@
-import { ApplicationResponseDto } from '@server/src/api_docs/api';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { ApplicationResponseDto } from '@server/src/api_docs/api'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
 
 function DocumentRequestsTable({ requests }: { requests: ApplicationResponseDto['documentRequests'] }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <div className="mt-4">
@@ -51,7 +51,7 @@ function DocumentRequestsTable({ requests }: { requests: ApplicationResponseDto[
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default DocumentRequestsTable;
+export default DocumentRequestsTable

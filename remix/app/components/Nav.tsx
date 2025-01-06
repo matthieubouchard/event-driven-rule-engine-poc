@@ -1,9 +1,9 @@
-import { Link, useLocation } from '@remix-run/react';
+import { Link, useLocation } from '@remix-run/react'
 
-import Logo from './Logo';
+import Logo from './Logo'
 
 const Nav = () => {
-  const location = useLocation();
+  const location = useLocation()
   const routes = [
     {
       name: 'Applications',
@@ -14,7 +14,7 @@ const Nav = () => {
       name: 'Rules',
       path: '/rules',
     },
-  ];
+  ]
   return (
     <div className="navbar bg-base-100 px-20">
       <div className="flex-1">
@@ -37,12 +37,12 @@ const Nav = () => {
               >
                 {route.name}
               </Link>
-            );
+            )
           })}
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Nav;
+export default Nav

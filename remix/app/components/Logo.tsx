@@ -40,5 +40,5 @@ export default function Logo() {
         fill="#310B56"
       />
     </svg>
-  );
+  )
 }

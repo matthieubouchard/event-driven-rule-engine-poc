@@ -1,29 +1,29 @@
-import { Link, useLoaderData, useRevalidator } from '@remix-run/react';
-import { Rule } from '@server/src/api_docs/api';
+import { Link, useLoaderData, useRevalidator } from '@remix-run/react'
+import { Rule } from '@server/src/api_docs/api'
 
-import { apiClient } from '../apiClient';
+import { apiClient } from '../apiClient'
 
 export async function loader(): Promise<Rule[]> {
-  const rules = await apiClient.ruleControllerFindAll();
+  const rules = await apiClient.ruleControllerFindAll()
 
   if (!rules) {
-    throw new Response('Failed to load rules', { status: 404 });
+    throw new Response('Failed to load rules', { status: 404 })
   }
-  return await rules.json();
+  return await rules.json()
 }
 
 export default function Rules() {
-  const data = useLoaderData<typeof loader>();
-  const validator = useRevalidator();
+  const data = useLoaderData<typeof loader>()
+  const validator = useRevalidator()
 
   const handleRuleDelete = async (e: React.MouseEvent, id: string) => {
-    e.preventDefault(); // Prevent the Link from triggering
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault() // Prevent the Link from triggering
+    e.stopPropagation() // Stop event bubbling
     if (confirm('Are you sure you want to delete this rule?')) {
-      await apiClient.ruleControllerSoftDelete(id);
-      validator.revalidate();
+      await apiClient.ruleControllerSoftDelete(id)
+      validator.revalidate()
     }
-  };
+  }
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -78,5 +78,5 @@ export default function Rules() {
         </div>
       )}
     </div>
-  );
+  )
 }

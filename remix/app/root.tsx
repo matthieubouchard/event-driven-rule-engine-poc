@@ -1,11 +1,11 @@
-import type { LinksFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { LinksFunction } from '@remix-run/node'
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import Nav from './components/Nav';
-import { NotificationToast } from './components/NotificationToast';
-import { useServerNotifications } from './hooks/api/useServerNotifications';
-import styles from './tailwind.css';
+import Nav from './components/Nav'
+import { NotificationToast } from './components/NotificationToast'
+import { useServerNotifications } from './hooks/api/useServerNotifications'
+import styles from './tailwind.css'
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -19,7 +19,7 @@ export const links: LinksFunction = () => [
     href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
   { rel: 'stylesheet', href: styles },
-];
+]
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,11 +37,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  );
+  )
 }
 
 export default function App() {
-  const { notifications } = useServerNotifications();
+  const { notifications } = useServerNotifications()
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -50,7 +50,7 @@ export default function App() {
         retry: 1,
       },
     },
-  });
+  })
   return (
     <>
       <div className="fixed top-4 right-10 z-50 flex flex-col gap-2 w-1/4">
@@ -69,5 +69,5 @@ export default function App() {
         <Outlet />;
       </QueryClientProvider>
     </>
-  );
+  )
 }

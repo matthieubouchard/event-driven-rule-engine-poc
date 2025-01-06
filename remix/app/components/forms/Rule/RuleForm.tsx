@@ -1,6 +1,6 @@
-import { useForm } from '@conform-to/react';
-import { json } from '@remix-run/node';
-import { Form, FormMethod, useLoaderData, useNavigate } from '@remix-run/react';
+import { useForm } from '@conform-to/react'
+import { json } from '@remix-run/node'
+import { Form, FormMethod, useLoaderData, useNavigate } from '@remix-run/react'
 import {
   FamilyStatusCondition,
   BusinessOwnerCondition,
@@ -9,38 +9,38 @@ import {
   RuleConditionFact,
   FamilyStatusEnum,
   RuleConditionsInput,
-} from '@server/src/api_docs/api';
+} from '@server/src/api_docs/api'
 
-import { apiClient } from '../../../apiClient';
+import { apiClient } from '../../../apiClient'
 
-import { transformAndValidateFormData } from './helper';
+import { transformAndValidateFormData } from './helper'
 
-import { useMatchingApplications } from '~/hooks/api/useMatchingRuleCount';
+import { useMatchingApplications } from '~/hooks/api/useMatchingRuleCount'
 
 export interface RuleFormProps {
   initialData?: {
-    name: string;
-    description?: string;
-    conditions: Array<FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition>;
-    actions: Array<Action>;
-  };
-  method: FormMethod;
+    name: string
+    description?: string
+    conditions: Array<FamilyStatusCondition | BusinessOwnerCondition | Filed2021Condition>
+    actions: Array<Action>
+  }
+  method: FormMethod
 }
 
 export async function loader() {
-  const [documentsRes] = await Promise.all([apiClient.documentControllerFindAll()]);
+  const [documentsRes] = await Promise.all([apiClient.documentControllerFindAll()])
 
   if (!documentsRes.ok) {
-    throw new Response('Documents not found', { status: 404 });
+    throw new Response('Documents not found', { status: 404 })
   }
 
-  const [documents] = await Promise.all([documentsRes.json()]);
-  return json({ documents });
+  const [documents] = await Promise.all([documentsRes.json()])
+  return json({ documents })
 }
 
 export default function RuleForm({ initialData, method = 'post' }: RuleFormProps) {
-  const { documents } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
+  const { documents } = useLoaderData<typeof loader>()
+  const navigate = useNavigate()
 
   const [form, fields] = useForm({
     defaultValue: initialData
@@ -68,10 +68,10 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
         },
     shouldRevalidate: 'onBlur',
     onValidate({ formData }) {
-      const result = transformAndValidateFormData(formData);
-      return result;
+      const result = transformAndValidateFormData(formData)
+      return result
     },
-  });
+  })
 
   const handleAddCondition = () => {
     form.insert({
@@ -80,8 +80,8 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
         fact: RuleConditionFact.FamilyStatus,
         value: FamilyStatusEnum.NEW,
       },
-    });
-  };
+    })
+  }
 
   const handleAddAction = () => {
     form.insert({
@@ -91,14 +91,14 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
         value: documents[0].id,
         description: '',
       },
-    });
-  };
+    })
+  }
 
-  const conditions = fields.conditions.getFieldList();
-  const actions = fields.actions.getFieldList();
-  const currentConditions = (fields?.conditions?.value ?? []) as unknown as RuleConditionsInput;
-  const { data } = useMatchingApplications(currentConditions);
-  const count = data?.count ?? 0;
+  const conditions = fields.conditions.getFieldList()
+  const actions = fields.actions.getFieldList()
+  const currentConditions = (fields?.conditions?.value ?? []) as unknown as RuleConditionsInput
+  const { data } = useMatchingApplications(currentConditions)
+  const count = data?.count ?? 0
 
   return (
     <Form id={form.id} onSubmit={form.onSubmit} method={method}>
@@ -159,8 +159,8 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
             </h2>
 
             {conditions.map((condition, index) => {
-              const fact = condition.value?.fact ?? RuleConditionFact.FamilyStatus;
-              const value = String(condition.value?.value !== undefined ? condition.value.value : FamilyStatusEnum.NEW);
+              const fact = condition.value?.fact ?? RuleConditionFact.FamilyStatus
+              const value = String(condition.value?.value !== undefined ? condition.value.value : FamilyStatusEnum.NEW)
 
               return (
                 <div key={condition.key}>
@@ -171,11 +171,11 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
                       name={`${condition.name}.fact`}
                       value={fact}
                       onChange={(e) => {
-                        const newFact = e.target.value as RuleConditionFact;
+                        const newFact = e.target.value as RuleConditionFact
                         form.update({
                           [`${condition.name}.fact`]: newFact,
                           [`${condition.name}.value`]: newFact === RuleConditionFact.FamilyStatus ? FamilyStatusEnum.NEW : 'true',
-                        });
+                        })
                       }}
                     >
                       <option value={RuleConditionFact.FamilyStatus}>Family Status</option>
@@ -191,7 +191,7 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
                         onChange={(e) => {
                           form.update({
                             [`${condition.name}.value`]: e.target.value,
-                          });
+                          })
                         }}
                       >
                         <option value={FamilyStatusEnum.NEW}>New</option>
@@ -205,7 +205,7 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
                         onChange={(e) => {
                           form.update({
                             [`${condition.name}.value`]: e.target.value,
-                          });
+                          })
                         }}
                       >
                         <option value="true">Yes</option>
@@ -224,7 +224,7 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
                     )}
                   </div>
                 </div>
-              );
+              )
             })}
 
             <button type="button" className="btn btn-link text-primary p-0 justify-start mt-4" onClick={handleAddCondition}>
@@ -290,5 +290,5 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
         </div>
       </div>
     </Form>
-  );
+  )
 }

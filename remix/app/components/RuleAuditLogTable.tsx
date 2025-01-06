@@ -1,10 +1,10 @@
-import { ApplicationResponseDto } from '@server/src/api_docs/api';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { ApplicationResponseDto } from '@server/src/api_docs/api'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
 
 function RuleAuditLogTable({ auditLog }: { auditLog: ApplicationResponseDto['ruleAudits'] }) {
-  const [open, setOpen] = useState(false);
-  const toggle = () => setOpen(!open);
+  const [open, setOpen] = useState(false)
+  const toggle = () => setOpen(!open)
 
   return (
     <div className="mt-4">
@@ -41,7 +41,7 @@ function RuleAuditLogTable({ auditLog }: { auditLog: ApplicationResponseDto['rul
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default RuleAuditLogTable;
+export default RuleAuditLogTable

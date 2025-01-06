@@ -1,37 +1,37 @@
-import { ActionFunctionArgs, json } from '@remix-run/node';
-import { useLoaderData, Form } from '@remix-run/react';
-import { ApplicationResponseDto } from '@server/src/api_docs/api';
+import { ActionFunctionArgs, json } from '@remix-run/node'
+import { useLoaderData, Form } from '@remix-run/react'
+import { ApplicationResponseDto } from '@server/src/api_docs/api'
 
-import { apiClient } from '../apiClient';
-import DocumentRequestsTable from '../components/DocumentRequestTable';
-import RuleAuditLogTable from '../components/RuleAuditLogTable';
+import { apiClient } from '../apiClient'
+import DocumentRequestsTable from '../components/DocumentRequestTable'
+import RuleAuditLogTable from '../components/RuleAuditLogTable'
 
 export async function loader(): Promise<ApplicationResponseDto[]> {
-  const rules = await apiClient.applicationControllerFindAll();
+  const rules = await apiClient.applicationControllerFindAll()
   if (!rules) {
-    throw new Response('Failed to load rules', { status: 404 });
+    throw new Response('Failed to load rules', { status: 404 })
   }
-  return await rules.json();
+  return await rules.json()
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const applicationId = formData.get('applicationId');
-  const res = await apiClient.applicationControllerProcessApplication(applicationId as unknown as string);
+  const formData = await request.formData()
+  const applicationId = formData.get('applicationId')
+  const res = await apiClient.applicationControllerProcessApplication(applicationId as unknown as string)
 
   if (!res.ok) {
     throw new Response('Failed to process application', {
       status: 500,
-    });
+    })
   }
 
-  console.log(`Processing application ${applicationId}`);
+  console.log(`Processing application ${applicationId}`)
 
-  return json(res);
+  return json(res)
 }
 
 export default function Applications() {
-  const applications = useLoaderData<typeof loader>();
+  const applications = useLoaderData<typeof loader>()
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -91,5 +91,5 @@ export default function Applications() {
         </div>
       )}
     </div>
-  );
+  )
 }
