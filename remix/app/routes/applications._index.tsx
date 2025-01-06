@@ -1,4 +1,4 @@
-import {useLoaderData, Form, redirect} from "@remix-run/react";
+import {useLoaderData, Form} from "@remix-run/react";
 import {ActionFunctionArgs, json} from "@remix-run/node";
 import {apiClient} from "../apiClient";
 import {ApplicationResponseDto} from "@server/src/api_docs/api";
@@ -31,20 +31,14 @@ export async function action({request}: ActionFunctionArgs) {
   return json(res);
 }
 
-const renderBirthday = (dateString: string) => {
-  const date = new Date(dateString);
-
-  const formattedDate = `${
-    date.getMonth() + 1
-  }/${date.getDate()}/${date.getFullYear()}`;
-  return formattedDate;
-};
 export default function Applications() {
   const applications = useLoaderData<typeof loader>();
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Applications</h1>
+        <h1 className="text-3xl font-bold" style={{color: "white"}}>
+          Applications
+        </h1>
       </div>
       <div className="grid grid-cols-1 gap-6">
         {applications.map((application) => (
@@ -58,7 +52,11 @@ export default function Applications() {
                   <h3 className="text-md font-semibold text-gray-600">
                     {application.student.firstName}{" "}
                     {application.student.lastName} DOB:{" "}
-                    {renderBirthday(application.student.dob)}
+                    {
+                      new Date(application.student.dob)
+                        .toLocaleDateString()
+                        .split(",")[0]
+                    }
                   </h3>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {/* Family Status Badge */}

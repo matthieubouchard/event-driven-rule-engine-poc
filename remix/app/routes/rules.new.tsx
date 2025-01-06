@@ -1,10 +1,9 @@
-import {parseWithZod} from "@conform-to/zod";
 import {ActionFunctionArgs, json} from "@remix-run/node";
 import {apiClient} from "../apiClient";
 import RuleForm from "../components/forms/Rule/RuleForm";
 import {transformAndValidateFormData} from "../components/forms/Rule/helper";
 import {redirect} from "@remix-run/react";
-import {CreateRuleDto, RuleConditionFact} from "@server/src/api_docs/api";
+import {CreateRuleDto} from "@server/src/api_docs/api";
 
 export async function loader() {
   const res = await apiClient.documentControllerFindAll();

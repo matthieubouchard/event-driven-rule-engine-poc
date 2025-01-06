@@ -13,17 +13,15 @@ export const NotificationToast: FC<NotificationProps> = ({
   title,
   isVisible,
 }) => {
-  console.log(type);
   const getAlertType = () => {
     switch (type) {
-      case "RULE_EVALUATED":
-        return "alert-info";
-      case "application.submitted":
+      case "no.rules.matched":
         return "alert-warning";
+      case "application.submitted":
+        return "alert-info";
       case "document.requested":
-        return "alert-info";
       case "document.request.created":
-        return "alert-info";
+        return "alert-success";
       default:
         return "alert-success";
     }

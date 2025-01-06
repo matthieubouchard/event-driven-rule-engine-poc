@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { DocumentStatus } from '@prisma/client'
 import { map } from 'lodash'
-import { DbService } from 'src/db/db.service'
-import { Action } from '../dto'
+import { DbService } from 'src/modules/db/db.service'
+import { Action } from '../../dto'
 
 @Injectable()
 export class DocumentService {
   constructor(private readonly dbService: DbService) {}
+  private readonly logger = new Logger(DocumentService.name)
+
   async findAll() {
     return this.dbService.client.document.findMany()
   }
@@ -35,7 +37,7 @@ export class DocumentService {
         document: { select: { name: true } },
       },
     })
-    console.log('DOCUMETN REquest result', result)
+    this.logger.debug('Document request result', result)
     return result
   }
   async handleDocumentRequest(applicationId: string, actions: Action[]) {
@@ -44,7 +46,6 @@ export class DocumentService {
         this.updateOrCreateDocumentRequest(applicationId, a.value),
       ),
     )
-
     return result
   }
 }

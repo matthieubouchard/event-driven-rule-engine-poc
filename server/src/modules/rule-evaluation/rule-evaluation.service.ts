@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Engine } from 'json-rules-engine'
-import { DbService } from 'src/db/db.service'
+import { DbService } from 'src/modules/db/db.service'
 import { map, get } from 'lodash'
 import { Application, RuleType } from '@prisma/client'
 import {
@@ -23,9 +23,7 @@ export class RuleEvaluationService {
       | Filed2021Condition
     )[],
   ) {
-    this.logger.debug(
-      `Evaluating conditions for application: ${JSON.stringify(application)}`,
-    )
+    this.logger.debug(`Evaluating conditions for application:`, application)
 
     const engine = new Engine()
 
@@ -53,7 +51,7 @@ export class RuleEvaluationService {
       filedUsTaxes2021: application.filedUsTaxes2021,
     }
 
-    this.logger.debug(`Evaluating facts: ${JSON.stringify(facts)}`)
+    this.logger.debug(`Evaluating facts:`, facts)
 
     try {
       const result = await engine.run(facts)
@@ -71,11 +69,7 @@ export class RuleEvaluationService {
       | Filed2021Condition
     )[],
   ) {
-    this.logger.debug(
-      `Counting applications matching conditions: ${JSON.stringify(
-        conditions,
-      )}`,
-    )
+    this.logger.debug('Counting applications matching conditions: ', conditions)
 
     // Convert conditions to Prisma where clauses
     const whereConditions = conditions.map((condition) => {
@@ -96,7 +90,10 @@ export class RuleEvaluationService {
       },
     })
 
-    this.logger.debug(`Found ${count} matching applications`)
+    this.logger.debug(
+      `Found ${count} matching applications for conditions: `,
+      conditions,
+    )
     return count
   }
   async evaluateApplicationRules(applicationId: string) {
@@ -122,15 +119,17 @@ export class RuleEvaluationService {
 
     // Add rules to engine
     for (const rule of rules) {
-      const ruleVersion = get(rule, 'versions[0]')
-      this.logger.log('RULE VERSION', ruleVersion)
+      const [ruleVersion] = rule.versions
+      this.logger.debug('RULE VERSION', ruleVersion)
+
+      // TODO: better typing here - perhaps don't store as JSON value
       const conditions = get(
         ruleVersion,
         'ruleJson.conditions',
         [],
       ) as unknown as any[]
       const actions = get(ruleVersion, 'ruleJson.actions', [])
-      this.logger.log('conditions', conditions)
+      this.logger.debug('conditions', conditions)
 
       engine.addRule({
         name: ruleVersion.name,
@@ -143,7 +142,6 @@ export class RuleEvaluationService {
           },
         },
         conditions: {
-          // eslint-disable-next-line
           any: map(conditions, (c) => ({
             fact: c.fact,
             operator: 'equal',
@@ -164,7 +162,7 @@ export class RuleEvaluationService {
 
     try {
       const result = await engine.run(facts)
-      this.logger.debug('EVENTS', result)
+      this.logger.debug('Rule evaluation result: ', result)
       // Create audit records
       await Promise.all([
         ...result.events.map((event) =>

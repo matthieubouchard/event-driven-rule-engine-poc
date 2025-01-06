@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { RuleService } from './rule.service'
-import { CreateRuleDto, RuleDto } from '../dto'
+import { CreateRuleDto, RuleDto } from '../../dto'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 @Controller('rules')

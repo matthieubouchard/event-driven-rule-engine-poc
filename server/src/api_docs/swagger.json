@@ -255,6 +255,7 @@
             }
           }
         },
+        "summary": "Get all applications with rule audit logs and document requests",
         "tags": [
           "Application"
         ]
@@ -285,6 +286,7 @@
             }
           }
         },
+        "summary": "Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable",
         "tags": [
           "Application"
         ]

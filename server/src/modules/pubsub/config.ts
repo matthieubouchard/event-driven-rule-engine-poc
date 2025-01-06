@@ -12,6 +12,14 @@ export const KAFKA_TOPICS = {
       'retention.ms': '604800000', // 7 days
     },
   },
+  NO_RULES_MATCHED: {
+    name: 'no.rules.matched',
+    partitions: 3,
+    config: {
+      'cleanup.policy': 'delete',
+      'retention.ms': '604800000',
+    },
+  },
   DOCUMENT_REQUESTED: {
     name: 'document.requested',
     partitions: 3,

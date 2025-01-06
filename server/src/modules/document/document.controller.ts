@@ -1,9 +1,10 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Logger } from '@nestjs/common'
 import { DocumentService } from './document.service'
 import { EventPattern } from '@nestjs/microservices'
-import { KAFKA_TOPICS } from 'src/pubsub/config'
-import { PubSubService } from 'src/pubsub/pubsub.service'
+import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
+import { PubSubService } from 'src/modules/pubsub/pubsub.service'
 import { map } from 'lodash'
+import { RuleActionType } from '@prisma/client'
 
 @Controller('document')
 export class DocumentController {
@@ -11,6 +12,7 @@ export class DocumentController {
     private readonly documentService: DocumentService,
     private readonly pubSubService: PubSubService,
   ) {}
+  private readonly logger = new Logger(DocumentController.name)
 
   @Get('/')
   async findAll() {
@@ -18,9 +20,19 @@ export class DocumentController {
     return docs
   }
   @EventPattern(KAFKA_TOPICS.DOCUMENT_REQUESTED.name)
-  async handleDocumentRequest(message: any) {
-    console.log(
-      '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DocumentController received document request created:',
+  async handleDocumentRequest(message: {
+    payload: {
+      actions: Array<{
+        value: string
+        type: RuleActionType
+        description?: string
+      }>
+      applicationId: string
+      ruleVersionId: string
+    }
+  }) {
+    this.logger.log(
+      'DocumentController received document request created:',
       message,
     )
     const documentRequests = await this.documentService.handleDocumentRequest(
@@ -29,7 +41,7 @@ export class DocumentController {
     )
     await Promise.all(
       map(documentRequests, (request) => {
-        this.pubSubService.publish({
+        this.pubSubService.publish<{ document: { name: string } }>({
           topic: KAFKA_TOPICS.DOCUMENT_REQUEST_CREATED.name,
           payload: request,
         })

@@ -39,8 +39,6 @@ export default function EditRule() {
     actions: latestVersion.ruleJson.actions,
   };
 
-  console.log("Initial data being passed to form", initialData);
-
   return <RuleForm key={rule.id} initialData={initialData} method="put" />;
 }
 

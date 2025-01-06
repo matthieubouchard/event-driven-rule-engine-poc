@@ -26,7 +26,9 @@ export default function Rules() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Rules</h1>
+        <h1 className="text-3xl font-bold" style={{color: "white"}}>
+          Rules
+        </h1>
         <Link
           to="/rules/new"
           className="btn bg-purple-600 hover:bg-purple-700 text-white border-none px-6 py-2 rounded-lg shadow-md transition-colors"

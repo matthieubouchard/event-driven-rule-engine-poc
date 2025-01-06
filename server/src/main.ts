@@ -7,10 +7,10 @@ import { exec } from 'child_process'
 import { ValidationPipe } from '@nestjs/common'
 import * as path from 'path'
 
-import { AppModule } from './app.module'
+import { AppModule } from './modules/clarity_api/app.module'
 import { getRemixHandler, broadcastOnReady, PUBLIC_PATH } from './remix'
 import * as serveStatic from 'serve-static'
-import { mainClientConfig } from './pubsub/config'
+import { mainClientConfig } from './modules/pubsub/config'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 const API_DOCS_PATH = path.resolve(process.cwd(), 'src', 'api_docs')

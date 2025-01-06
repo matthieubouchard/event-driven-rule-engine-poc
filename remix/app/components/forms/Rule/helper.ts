@@ -1,5 +1,4 @@
 import {z} from "zod";
-import {map} from "lodash";
 import {parseWithZod} from "@conform-to/zod";
 import {RuleConditionFact, FamilyStatusEnum} from "@server/src/api_docs/api";
 

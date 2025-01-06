@@ -29,16 +29,16 @@ export const links: LinksFunction = () => [
 
 export function Layout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" style={{background: "#310b56"}}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body style={{background: "#310b56"}}>
         <Nav />
-        <div className="container mx-auto py-3">{children}</div>
+        <div className="container mx-auto py-10">{children}</div>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -499,6 +499,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Application
      * @name ApplicationControllerFindAll
+     * @summary Get all applications with rule audit logs and document requests
      * @request GET:/api/application
      */
     applicationControllerFindAll: (params: RequestParams = {}) =>
@@ -513,6 +514,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Application
      * @name ApplicationControllerProcessApplication
+     * @summary Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable
      * @request POST:/api/application/{id}
      */
     applicationControllerProcessApplication: (id: string, params: RequestParams = {}) =>

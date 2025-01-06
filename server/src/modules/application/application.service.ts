@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { DbService } from 'src/db/db.service'
-import { PubSubService } from 'src/pubsub/pubsub.service'
+import { DbService } from 'src/modules/db/db.service'
+import { PubSubService } from 'src/modules/pubsub/pubsub.service'
 import { TryCatch } from 'decorators'
+import { KAFKA_TOPICS } from 'src/modules/pubsub/config'
 
 @Injectable()
 export class ApplicationService {
@@ -48,9 +49,8 @@ export class ApplicationService {
     },
   })
   async processApplication(applicationId: string) {
-    // throw new Error(" cna't do that now")
-    await this.pubSubService.publish({
-      topic: 'application.submitted',
+    await this.pubSubService.publish<{ applicationId: string }>({
+      topic: KAFKA_TOPICS.APPLICATION_SUBMITTED.name,
       payload: {
         applicationId,
       },
