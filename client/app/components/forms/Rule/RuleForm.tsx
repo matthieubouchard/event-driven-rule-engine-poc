@@ -102,7 +102,7 @@ export default function RuleForm({ initialData, method = 'post' }: RuleFormProps
 
   return (
     <Form id={form.id} onSubmit={form.onSubmit} method={method}>
-      <div className="max-w-4xl mx-auto p-4 bg-base-100">
+      <div className="max-w-4xl mx-auto p-4 bg-base-100 rounded">
         <div className="flex justify-between items-center mb-6">
           <button type="button" className="btn btn-ghost gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24">

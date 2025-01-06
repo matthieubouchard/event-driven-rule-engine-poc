@@ -261,7 +261,7 @@
         ]
       }
     },
-    "/api/application/{id}": {
+    "/api/application/process/{id}": {
       "post": {
         "operationId": "ApplicationController_processApplication",
         "parameters": [
@@ -426,8 +426,8 @@
             "type": "string",
             "enum": [
               "APPLICATION",
-              "PAYMENT",
-              "NOTIFICATION"
+              "NOTIFICATION",
+              "PAYMENT"
             ],
             "default": "APPLICATION"
           },
@@ -484,8 +484,8 @@
             "type": "string",
             "enum": [
               "APPLICATION",
-              "PAYMENT",
-              "NOTIFICATION"
+              "NOTIFICATION",
+              "PAYMENT"
             ]
           },
           "ruleJson": {
@@ -661,11 +661,11 @@
           "status": {
             "type": "string",
             "enum": [
-              "PENDING",
-              "REQUESTED",
-              "SUBMITTED",
               "APPROVED",
-              "REJECTED"
+              "PENDING",
+              "REJECTED",
+              "REQUESTED",
+              "SUBMITTED"
             ]
           },
           "document": {

@@ -40,15 +40,13 @@ export const KAFKA_TOPICS = {
 }
 
 // re-usable util for creating separate clients/consumers
-export const createKafkaClientConfig = (
-  clientName: string,
-): ClientProviderOptions => ({
+export const createKafkaClientConfig = (clientName: string): ClientProviderOptions => ({
   name: clientName,
   transport: Transport.KAFKA,
   options: {
     client: {
       clientId: clientName,
-      brokers: ['localhost:9092'],
+      brokers: ['kafka:29092'],
     },
     consumer: {
       groupId: `${clientName}-consumer`,

@@ -3,20 +3,23 @@ services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-      - "24678:24678"
+      - "3000:3000" # Frontend
+      - "24678:24678" # Vite HMR
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/clarity
       - NODE_ENV=development
-      - PORT=3000
-      - WATCHPACK_POLLING=true # Add this for better hot reloading in Docker
+      - WATCHPACK_POLLING=true
     depends_on:
       - db
+      - kafka
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run dev # Explicitly set the command here
+      - /usr/src/app/client/node_modules
+      - /usr/src/app/server/node_modules
+    command: yarn run dev
 
   db:
     image: postgres:17

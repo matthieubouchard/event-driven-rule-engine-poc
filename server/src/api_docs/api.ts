@@ -506,11 +506,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Application
      * @name ApplicationControllerProcessApplication
      * @summary Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable
-     * @request POST:/api/application/{id}
+     * @request POST:/api/application/process/{id}
      */
     applicationControllerProcessApplication: (id: string, params: RequestParams = {}) =>
       this.request<any, GenericMutationResponse>({
-        path: `/api/application/${id}`,
+        path: `/api/application/process/${id}`,
         method: 'POST',
         ...params,
       }),

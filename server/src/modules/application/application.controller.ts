@@ -21,7 +21,7 @@ export class ApplicationController {
   @ApiOperation({
     summary: 'Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable',
   })
-  @Post('/:id')
+  @Post('/process/:id')
   async processApplication(@Param('id') applicationId: string) {
     return await this.applicationService.processApplication(applicationId)
   }
