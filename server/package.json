@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate:api": "swagger-typescript-api -p src/api_docs/swagger.json -o src/api_docs/ -n api.ts",
+    "generate:api": "npx swagger-typescript-api -p src/api_docs/swagger.json -o src/api_docs/ -n api.ts",
     "db:migrate:dev": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:migrate:reset": "prisma migrate reset",

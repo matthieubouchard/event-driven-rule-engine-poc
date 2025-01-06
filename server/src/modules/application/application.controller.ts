@@ -19,8 +19,7 @@ export class ApplicationController {
   }
   @ApiResponse({ type: GenericMutationResponse })
   @ApiOperation({
-    summary:
-      'Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable',
+    summary: 'Kick off the sequence of events to process an application -> evaluate rule for application and create document request is applicable',
   })
   @Post('/:id')
   async processApplication(@Param('id') applicationId: string) {

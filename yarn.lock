@@ -9420,7 +9420,7 @@ swagger-schema-official@2.0.0-bab6bed:
 
 swagger-typescript-api@^13.0.23:
   version "13.0.23"
-  resolved "https://registry.npmjs.org/swagger-typescript-api/-/swagger-typescript-api-13.0.23.tgz"
+  resolved "https://registry.yarnpkg.com/swagger-typescript-api/-/swagger-typescript-api-13.0.23.tgz#411d421a64877c5f168260329fefda6d7bf4629f"
   integrity sha512-HhoIepxlFEU7Ol42Gh8/tvwhSxdkHcweX2tRkNhbZYBiEA+rK3C6N85MnwoeQR5XbidE3Kz8mLOqIerVGgR9uw==
   dependencies:
     "@types/swagger-schema-official" "^2.0.25"
