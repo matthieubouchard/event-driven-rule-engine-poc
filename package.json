@@ -6,13 +6,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "yarn workspace remix dev --manual -c \"yarn workspace server start:dev\"",
-    "remix:build": "yarn workspace remix build",
+    "dev": "yarn workspace client dev --manual -c \"yarn workspace server start:dev\"",
+    "remix:build": "yarn workspace client build",
     "server:dev": "yarn workspace server start:dev"
   },
   "workspaces": [
     "server",
-    "remix"
+    "client"
   ],
   "dependencies": {
     "@nestjs/mapped-types": "*",
