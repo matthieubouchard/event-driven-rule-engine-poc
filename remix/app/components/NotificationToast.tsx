@@ -15,6 +15,7 @@ export const NotificationToast: FC<NotificationProps> = ({ type, message, title,
       case 'application.submitted':
         return 'alert-info'
       case 'document.requested':
+        return 'alert-success'
       case 'document.request.created':
         return 'alert-success'
       default:

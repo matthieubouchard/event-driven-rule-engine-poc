@@ -1,6 +1,7 @@
 import type { LinksFunction } from '@remix-run/node'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { map } from 'lodash'
 
 import Nav from './components/Nav'
 import { NotificationToast } from './components/NotificationToast'
@@ -54,13 +55,13 @@ export default function App() {
   return (
     <>
       <div className="fixed top-4 right-10 z-50 flex flex-col gap-2 w-1/4">
-        {notifications.map((notification) => (
+        {map(notifications, (notification) => (
           <div key={notification.id}>
             <NotificationToast
               type={notification.type}
               title={notification.type}
               message={JSON.stringify(notification.payload.payload, null, 2)}
-              isVisible={notification.isVisible}
+              isVisible={notification?.isVisible}
             />
           </div>
         ))}

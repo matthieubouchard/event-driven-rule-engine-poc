@@ -53,7 +53,8 @@ export function useServerNotifications(endpoint = 'http://localhost:3000/api/not
       eventSource.close()
       setStatus('disconnected')
     }
-  }, [endpoint, validator])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endpoint])
 
   return { notifications, status }
 }
