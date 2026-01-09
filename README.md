@@ -15,7 +15,7 @@ The app uses Kafka and the `@EventPattern` decorator to listen to system events 
 5. Frontend available at [`/`](http://localhost:3000), API available at [`/api`](http://localhost:3000/api)
 6. Demo and code walkthru videos:
    - [Demo: Part 1](https://www.loom.com/share/7b3be6d70ad14700a2e83293a18930f8)
-   - [Part2](https://www.loom.com/share/17efcba839c640e598196a3b0d47d645)
+   - [Part 2](https://www.loom.com/share/17efcba839c640e598196a3b0d47d645)
    - [Part 3](https://www.loom.com/share/dbb5af6e297f4837878217a56d6c1391)
 
 ## Core Architecture
