@@ -1,6 +1,10 @@
 # Rule Engine POC Project
 
-My approach to this project was to consider how to build a rule engine that allows for flexibility and scalability. I chose to use node-rules-json as a package for evaluating rules with a basic schema of `conditions` and `actions`. I considered that there may be different type of rules or ways of chaining rules that we would want to handle in the future so this POC distinguishes that there may be different types of rules like `RuleType.Application` or `RuleType.Payment`. Depending on the type of rule, the `RuleEvaluationService` can construct and resolve a flexible dictionary of facts to evaluate. The app uses Kafka and the `@EventPattern` decorator to listen to system events in sequence and in parallel and that each module in the NestJS app could be broken out into a standalone microserivce with relatively low overhead. This results in event-driven application that automates document requests (or any rule decided actions) based on application criteria. The architecture follows a clean separation of concerns between client/server and within server modules themselves but with shared type safety defined in the server.
+My approach to this project was to consider how to build a rule engine that allows for flexibility and scalability. I chose to use node-rules-json as a package for evaluating rules with a basic schema of `conditions` and `actions`. 
+
+I considered that there may be different type of rules or ways of chaining rules that we would want to handle in the future so this POC distinguishes that there may be different types of rules like `RuleType.Application` or `RuleType.Payment`. Depending on the type of rule, the `RuleEvaluationService` can construct and resolve a flexible dictionary of facts to evaluate. 
+
+The app uses Kafka and the `@EventPattern` decorator to listen to system events in sequence and in parallel and that each module in the NestJS app could be broken out into a standalone microserivce with relatively low overhead. This results in event-driven application that automates document requests (or any rule decided actions) based on application criteria. The architecture follows a clean separation of concerns between client/server and within server modules themselves but with shared type safety defined in the server.
 
 ## Running the app
 
@@ -87,10 +91,3 @@ Kafka provides an event log that could be used for replay and system recovery
 - Kafka partitioning for parallel processing
 - Horizontal scaling of individual services
 
-### Observability
-
-- Centralized logging
-- Performance metrics
-- tracing
-
-I'm somewhat new to event-driven architecture so this was a good learning opportunity that raised some good question. Having discussed that I'd previously worked on a Rule engine project, there are several patterns here that would have greatly improved scalability and resilience in the previous project.
