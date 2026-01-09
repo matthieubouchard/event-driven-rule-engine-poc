@@ -10,7 +10,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 import * as serveStatic from 'serve-static'
 
-import { AppModule } from './modules/clarity_api/app.module'
+import { AppModule } from './modules/api/app.module'
 import { mainClientConfig } from './modules/pubsub/config'
 import { getRemixHandler, broadcastOnReady, PUBLIC_PATH } from './remix'
 

@@ -1,7 +1,5 @@
 import { Link, useLocation } from '@remix-run/react'
 
-import Logo from './Logo'
-
 const Nav = () => {
   const location = useLocation()
   const routes = [
@@ -19,8 +17,7 @@ const Nav = () => {
     <div className="navbar bg-base-100 px-20">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
-          <Logo />
-          Rule Engine
+          Event Driven Rule Engine POC
         </Link>
       </div>
       <div className="flex-none">
